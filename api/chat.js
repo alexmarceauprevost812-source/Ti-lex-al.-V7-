@@ -4,9 +4,9 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 function buildSystemPrompt(agent) {
   if (!agent || agent.is_master) {
-    return "Tu es TI-LEX-AL, une IA personnelle ultra fun et compétente. Ton style: drole, direct, un peu arrogant mais adorable. Tu utilises des emojis. Tu parles en francais. Tu es expert en TOUT: code, design, strategie, recherche, humour. Tu appelles l utilisateur boss. Tu es confiant et enthousiaste. Tes reponses sont utiles, precises ET divertissantes. Tu ne dis JAMAIS que tu ne peux pas faire quelque chose. Format: reponses structurees mais pas trop longues. Va droit au but avec style.";
+    return "Tu es TI-LEX-AL, une IA personnelle ultra fun et compétente. Ton style: drôle, direct, un peu arrogant mais adorable. Tu utilises des emojis. Tu parles en français. Tu es expert en TOUT: code, design, stratégie, recherche, humour. Tu appelles l'utilisateur boss. Tu es confiant et enthousiaste. Tes réponses sont utiles, précises ET divertissantes. Tu ne dis JAMAIS que tu ne peux pas faire quelque chose — tu trouves toujours une solution. Format: réponses structurées mais pas trop longues. Va droit au but avec style.";
   }
-  return "Tu es " + agent.name + ", un agent IA personnalise. Personnalite: " + (agent.personality || "sympa et utile") + ". Specialite: " + (agent.specialty || "general") + ". Tu parles en francais. Tu restes dans ton role. Tu utilises des emojis.";
+  return "Tu es " + agent.name + ", un agent IA personnalisé. Personnalité: " + (agent.personality || "sympa et utile") + ". Spécialité: " + (agent.specialty || "général") + ". Tu parles en français. Tu restes dans ton rôle. Tu utilises des emojis.";
 }
 
 module.exports = async function handler(req, res) {
@@ -26,8 +26,13 @@ module.exports = async function handler(req, res) {
     if (!message || typeof message !== "string" || message.trim().length === 0) {
       return res.status(400).json({ error: "Message vide" });
     }
+
+    if (message.length > 4000) {
+      return res.status(400).json({ error: "Message trop long (max 4000 chars)" });
+    }
+
     if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: "OPENAI_API_KEY non configuree" });
+      return res.status(500).json({ error: "OPENAI_API_KEY non configurée" });
     }
 
     var messages = [{ role: "system", content: buildSystemPrompt(agent) }];
@@ -48,13 +53,23 @@ module.exports = async function handler(req, res) {
       temperature: 0.85
     });
 
-    var reply = completion.choices[0].message.content || "Pas de reponse...";
+    var reply = completion.choices[0].message.content || "Pas de réponse...";
 
-    return res.status(200).json({ reply: reply, model: "gpt-4o-mini" });
+    return res.status(200).json({
+      reply: reply,
+      model: "gpt-4o-mini",
+      usage: completion.usage
+    });
   } catch (err) {
     console.error("Chat API error:", err.message);
-    if (err.status === 429) return res.status(429).json({ error: "Trop de requetes, attends un peu!" });
-    if (err.status === 401) return res.status(401).json({ error: "Cle API invalide" });
+
+    if (err.status === 429) {
+      return res.status(429).json({ error: "Trop de requêtes — attends un peu! ⏳" });
+    }
+    if (err.status === 401) {
+      return res.status(401).json({ error: "Clé API invalide" });
+    }
+
     return res.status(500).json({ error: "Erreur serveur: " + err.message });
   }
 };
