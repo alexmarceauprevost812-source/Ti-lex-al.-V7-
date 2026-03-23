@@ -1,5 +1,14 @@
 {
   "name": "ti-lex-al",
   "version": "1.0.0",
-  "private": true
+  "description": "TI-LEX-AL — Plateforme IA avec GPT-4o-mini",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step needed'",
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
