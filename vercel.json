@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/api/chat", "destination": "/api/chat.js" },
+    { "source": "/api/health", "destination": "/api/health.js" },
+    { "source": "/api/search", "destination": "/api/search.js" }
+  ]
+}
