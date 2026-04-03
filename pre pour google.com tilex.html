@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="burnup">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>TI-LEX-AL — Plateforme IA</title>
+<meta name="description" content="TI-LEX-AL: Plateforme IA multi-agents multilingue.">
+<meta name="theme-color" content="#ff6600">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Outfit:wght@300;400;500;600;700&display=swap">
+<link rel="preconnect" href="https://rnuripmfozlxenryxhdc.supabase.co">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ===== THÈME BURNUP 🔥 ===== */
+[data-theme="burnup"]{--p:#ff6600;--p2:#ff8c00;--pd:#994400;--pdd:#4d2200;--pg:linear-gradient(135deg,#ff6600,#cc5500);--ps:rgba(255,102,0,.6);--ps2:rgba(255,68,0,.3);--ps3:rgba(255,102,0,.15);--ph:rgba(255,102,0,.05);--pb:rgba(255,102,0,.1);--r:#ff1a1a;--g:#39ff14;--bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--bg4:#222;--b:#1f1f1f;--b2:#2a2a2a;--b3:#333;--t:#fff;--t2:#ccc;--t3:#888;--t4:#555}
+
+/* ===== THÈME VIOLET 💜 ===== */
+[data-theme="violet"]{--p:#a855f7;--p2:#c084fc;--pd:#7c3aed;--pdd:#4c1d95;--pg:linear-gradient(135deg,#a855f7,#7c3aed);--ps:rgba(168,85,247,.6);--ps2:rgba(124,58,237,.3);--ps3:rgba(168,85,247,.15);--ph:rgba(168,85,247,.05);--pb:rgba(168,85,247,.1);--r:#ff1a1a;--g:#c084fc;--bg:#0a0a10;--bg2:#111118;--bg3:#18182a;--bg4:#222233;--b:#1a1a2e;--b2:#2a2a44;--b3:#333355;--t:#f0e6ff;--t2:#d4b8ff;--t3:#9988bb;--t4:#665588}
+
+/* ===== THÈME GOLD 💰 ===== */
+[data-theme="gold"]{--p:#FFE135;--p2:#FFD700;--pd:#CCAA00;--pdd:#806B00;--pg:linear-gradient(135deg,#FFE135,#CCAA00);--ps:rgba(255,225,53,.6);--ps2:rgba(255,225,53,.3);--ps3:rgba(255,225,53,.15);--ph:rgba(255,225,53,.05);--pb:rgba(255,225,53,.1);--r:#ff1a1a;--g:#FFE135;--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;--b:#1f1f1f;--b2:#2a2a2a;--b3:#333;--t:#fff;--t2:#eee;--t3:#999;--t4:#666}
+[data-theme="gold"] .ab,[data-theme="gold"] .sndb{color:#000}
+
+/* ===== RTL (Arabe) ===== */
+[dir="rtl"] .tb-l{flex-direction:row-reverse}
+[dir="rtl"] .si{left:auto;right:-280px}
+[dir="rtl"] .si.open{right:0;left:auto}
+[dir="rtl"] .ib{flex-direction:row-reverse}
+
+body{background:var(--bg);font-family:'Outfit',system-ui,sans-serif;width:100vw;height:100vh;overflow:hidden;color:var(--t);font-weight:600;-webkit-font-smoothing:antialiased}
+#matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.vig{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.7) 100%)}
+#menuPage{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity 1.2s}
+#menuPage.hide{opacity:0;pointer-events:none}
+.m-av{width:clamp(140px,30vw,220px);height:auto;margin-bottom:10px;animation:avF 4s ease-in-out infinite,avI 1.2s ease-out both;filter:drop-shadow(0 0 30px var(--ps)) drop-shadow(0 0 60px var(--ps2));transition:transform .3s,filter .3s}
+.m-av:hover{transform:scale(1.08)}
+@keyframes avF{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes avI{0%{opacity:0;transform:scale(.5) translateY(30px);filter:blur(10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+.lw{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:24px;animation:lI 1s ease-out .3s both}
+@keyframes lI{0%{opacity:0;transform:translateY(-20px);filter:blur(8px)}100%{opacity:1;transform:translateY(0)}}
+.lt{font-family:'Orbitron',monospace;font-size:clamp(11px,2.5vw,14px);font-weight:700;color:var(--t3);letter-spacing:6px;text-transform:uppercase}
+.logo{font-family:'Orbitron',monospace;font-size:clamp(42px,10vw,72px);font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,#fff 0%,var(--p) 50%,var(--pd) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo .d{-webkit-text-fill-color:var(--p);opacity:.4}
+.ll{width:60%;height:2px;background:linear-gradient(90deg,transparent,var(--p),transparent)}
+.ls{font-family:'Orbitron',monospace;font-size:clamp(9px,2vw,12px);font-weight:700;color:var(--t4);letter-spacing:8px;text-transform:uppercase}
+.ml{list-style:none;display:flex;flex-direction:column;gap:6px;animation:fadeIn .5s ease-out .6s both}
+.mi{font-family:'Orbitron',monospace;font-size:clamp(14px,3.5vw,18px);font-weight:700;letter-spacing:3px;color:var(--t2);padding:14px 48px;cursor:pointer;border:1px solid var(--b2);border-radius:12px;transition:all .3s;text-align:center;text-transform:uppercase;background:rgba(0,0,0,.3);backdrop-filter:blur(10px)}
+.mi:hover{border-color:var(--p);color:var(--p);background:var(--ph);transform:translateY(-2px)}
+#logoOverlay{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .8s}
+#logoOverlay.show{opacity:1;pointer-events:auto}
+#logoOverlay img{width:clamp(180px,40vw,300px);animation:avF 3s ease-in-out infinite}
+#chatPlatform{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .5s}
+#chatPlatform.visible{opacity:1;pointer-events:auto}
+.tb{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:rgba(13,13,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--b);z-index:30}
+.tb-l{display:flex;align-items:center;gap:12px}
+.tb-r{display:flex;align-items:center;gap:10px}
+.hmb{background:none;border:none;cursor:pointer;padding:6px;color:var(--t2)}
+.tb-av{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--p);cursor:pointer}
+.tb-n{font-family:'Orbitron',monospace;font-weight:900;font-size:16px;letter-spacing:2px}
+.tb-s{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--g);font-weight:700}
+.tb-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.mb{background:none;border:1px solid var(--b2);border-radius:10px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--t3);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s}
+.mb:hover{border-color:var(--p);color:var(--p)}
+.cm{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;align-items:center;-webkit-overflow-scrolling:touch}
+.cw{width:100%;max-width:560px}
+.w-av{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--p);box-shadow:0 0 20px var(--ps2)}
+.w-t{font-family:'Orbitron',monospace;font-weight:900;font-size:20px;margin-top:12px}
+.w-s{color:var(--t3);font-size:14px;font-weight:500;margin-top:4px}
+.as{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:12px;color:var(--p);font-weight:700}
+.as .ad{width:8px;height:8px;border-radius:50%;background:var(--p);animation:pulse 2s infinite}
+.cg{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;justify-content:center}
+.chip{font-size:13px;font-weight:600;padding:10px 16px;border-radius:20px;border:1px solid var(--b2);background:var(--bg3);color:var(--t2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.chip:hover{border-color:var(--p);color:var(--p);background:var(--ph)}
+.sv{width:100%;max-width:560px;padding:10px 0;animation:fadeIn .4s ease-out}
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.sh h2{font-family:'Orbitron',monospace;font-weight:700;font-size:20px;letter-spacing:1px}
+.sd{font-size:14px;color:var(--t3);margin-bottom:20px;font-weight:500}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sc{background:var(--bg3);border:1px solid var(--b2);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all .2s}
+.sc:hover{border-color:var(--pd);transform:translateY(-2px)}
+.sci{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px}
+.sct{font-weight:700;font-size:14px}
+.scs{font-size:12px;color:var(--t4);margin-top:2px}
+.ia{padding:10px 16px 20px;background:rgba(13,13,13,.9);backdrop-filter:blur(20px);border-top:1px solid var(--b)}
+.ib{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--b2);border-radius:16px;padding:6px 8px 6px 12px}
+.pb{background:none;border:none;cursor:pointer;color:var(--t3);padding:4px}
+.pb:hover{color:var(--p)}
+.if{flex:1;background:none;border:none;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--t);outline:none;caret-color:var(--p)}
+.if::placeholder{color:var(--t4)}
+.sndb{background:var(--p);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+.sndb:hover{background:var(--p2);box-shadow:0 2px 12px var(--ps)}
+.so{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;opacity:0;pointer-events:none;transition:opacity .3s}
+.so.open{opacity:1;pointer-events:auto}
+.si{position:fixed;top:0;left:-280px;width:280px;height:100%;background:var(--bg2);z-index:45;transition:left .3s;display:flex;flex-direction:column;border-right:1px solid var(--b);overflow-y:auto}
+.si.open{left:0}
+.si-h{display:flex;align-items:center;justify-content:space-between;padding:16px}
+.si-s{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t3);font-weight:600;flex:1;background:var(--bg3);border-radius:10px;padding:8px 12px}
+.si-n{background:none;border:1px solid var(--b2);border-radius:10px;padding:8px;cursor:pointer;color:var(--t2);margin-left:8px}
+.si-in{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);margin:4px 10px;border-radius:10px;font-size:14px;font-weight:700;color:var(--p);cursor:pointer}
+.si-dv{height:1px;background:var(--b);margin:8px 10px}
+.si-lb{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px;padding:8px 14px}
+.si-it{display:flex;align-items:center;gap:12px;padding:10px 14px;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;transition:background .15s;border-radius:8px;margin:1px 6px}
+.si-it:hover{background:var(--bg3)}
+.ic{width:24px;display:flex;align-items:center;justify-content:center;color:var(--t3)}
+.si-ft{margin-top:auto;padding:16px;border-top:1px solid var(--b);display:flex;align-items:center;gap:12px}
+.si-fa{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid var(--p)}
+.si-fn{font-size:15px;font-weight:600}
+.ig{display:flex;flex-direction:column;gap:4px;padding:4px 10px}
+.ii{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .2s}
+.ii:hover{background:var(--bg3)}
+.il{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.iif{flex:1}.iin{font-size:13px;font-weight:700}
+.ist{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ist.on{background:var(--g);box-shadow:0 0 6px rgba(57,255,20,.4)}
+.ist.off{background:var(--t4)}
+.ibtn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;margin:8px 10px;background:var(--bg3);border:1px dashed var(--b3);border-radius:10px;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer}
+.ibtn:hover{border-color:var(--p);color:var(--p)}
+.pm{position:fixed;bottom:-100%;left:16px;right:16px;background:var(--bg2);border-radius:20px;z-index:55;transition:bottom .3s;padding:8px 0;max-width:320px;visibility:hidden}
+.pm.open{bottom:90px;visibility:visible}
+.pmi{display:flex;align-items:center;gap:14px;padding:14px 20px;font-size:16px;font-weight:600;color:var(--t);cursor:pointer;transition:background .15s}
+.pmi:hover{background:var(--bg3)}
+.pmico{width:38px;height:38px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;color:var(--t3)}
+.mpop{position:fixed;bottom:-100%;left:0;width:100%;background:var(--bg2);border-top-left-radius:20px;border-top-right-radius:20px;z-index:60;transition:bottom .3s;padding:20px;max-height:70vh;visibility:hidden}
+.mpop.open{bottom:0;visibility:visible}
+.mph{width:40px;height:4px;background:var(--t4);border-radius:4px;margin:0 auto 16px}
+.mpt{font-weight:800;font-size:22px;text-align:center;margin-bottom:20px}
+.mpo{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:14px;padding:16px;margin-bottom:8px;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.mpo:hover{border-color:var(--b3)}.mpo.active{border-color:var(--pd)}
+.mpon{font-weight:700;font-size:16px}.mponum{color:var(--p);margin-left:6px;font-weight:700}
+.mpod{font-size:14px;font-weight:500;color:var(--t3);margin-top:2px}
+.mpc{color:var(--t);font-size:20px}
+.mptg{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:14px;padding:16px;margin-top:16px}
+.mptgt{font-weight:700;font-size:15px;max-width:70%}
+.ts{width:50px;height:28px;background:var(--t4);border-radius:14px;position:relative;cursor:pointer;transition:background .3s}
+.ts.on{background:var(--p)}
+.ts::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .3s}
+.ts.on::after{left:25px}
+
+/* THEME SELECTOR */
+.tg{display:flex;gap:6px;padding:4px 14px;flex-wrap:wrap}
+.tb-th{flex:1;min-width:70px;padding:8px 4px;border-radius:10px;border:2px solid var(--b2);background:var(--bg3);cursor:pointer;text-align:center;transition:all .2s;font-family:'Outfit',sans-serif;font-weight:700;font-size:11px}
+.tb-th:hover{transform:translateY(-1px)}
+.tb-th.active{border-color:var(--p);box-shadow:0 0 10px var(--ps2)}
+.td{width:20px;height:20px;border-radius:50%;margin:0 auto 4px}
+
+/* LANG SELECTOR */
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px 14px}
+.lang-btn{padding:8px;border-radius:8px;border:1px solid var(--b2);background:var(--bg3);cursor:pointer;text-align:center;font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;color:var(--t2);transition:all .2s}
+.lang-btn:hover{border-color:var(--p);color:var(--p)}
+.lang-btn.active{border-color:var(--p);background:var(--pb);color:var(--p)}
+
+/* AUTH */
+.am{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(10px)}
+.am.open{opacity:1;pointer-events:auto}
+.ac{background:var(--bg2);border:1px solid var(--b2);border-radius:20px;padding:30px;width:90%;max-width:380px;position:relative;animation:fadeIn .3s}
+.ax{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer}
+.aav{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--p);box-shadow:0 0 15px var(--ps2);display:block;margin:0 auto 16px}
+.atit{text-align:center;font-weight:800;font-size:24px;margin-bottom:4px}
+.asub{text-align:center;font-size:14px;color:var(--t3);margin-bottom:20px}
+.aig{margin-bottom:16px}.ail{font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.ai{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:12px;padding:12px 16px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--t);outline:none;caret-color:var(--p);transition:border-color .2s;box-sizing:border-box}
+.ai:focus{border-color:var(--pd)}.ai::placeholder{color:var(--t4)}
+.ab{width:100%;padding:14px;background:var(--p);border:none;border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:all .2s}
+.ab:hover{background:var(--p2)}.ab:disabled{opacity:.5;cursor:not-allowed}
+.ae{background:rgba(255,26,26,.1);border:1px solid rgba(255,26,26,.3);border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;color:#ff6b6b;margin-bottom:12px;display:none}
+.asu{background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.2);border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;color:var(--g);margin-bottom:12px;display:none}
+.aft{text-align:center;font-size:13px;color:var(--t3);margin-top:16px}
+.aft a{color:var(--p);cursor:pointer;font-weight:700;text-decoration:none}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:100;background:var(--bg3);border:1px solid var(--pdd);border-radius:14px;padding:12px 24px;font-size:15px;font-weight:600;color:var(--t);box-shadow:0 8px 30px rgba(0,0,0,.5);transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.thinking-anim{display:inline-block;animation:tp 1.2s ease-in-out infinite}
+@keyframes tp{0%,100%{opacity:1}50%{opacity:.4}}
+.si-it:active,.pmi:active,.chip:active{background:var(--pb)!important;transform:scale(.97)}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="vig"></div>
+
+<div id="menuPage">
+  <img class="m-av" id="menuAvatar" src="/assets/logo.png" alt="TI-LEX-AL" width="220" height="220">
+  <div class="lw">
+    <div class="lt" data-i18n="platform">Plateforme IA</div>
+    <h1 class="logo">TI<span class="d">-</span>LEX<span class="d">-</span>AL</h1>
+    <div class="ll"></div>
+    <div class="ls" data-i18n="ai">Intelligence Artificielle</div>
+  </div>
+  <ul class="ml">
+    <li class="mi" onclick="enterTransition()" data-i18n="enter">Entrer</li>
+    <li class="mi" onclick="openAuth('login')" data-i18n="login">Connexion</li>
+    <li class="mi" onclick="openAuth('signup')" data-i18n="signup">Inscription</li>
+  </ul>
+  <div style="position:fixed;bottom:12px;right:16px;font-size:10px;font-weight:500;color:var(--t4);letter-spacing:.5px;opacity:.6;text-align:right;line-height:1.5;z-index:11;">Produit du Québec 🇨🇦<br>TI-LEX-AL — Alex Marceau-Prévost</div>
+</div>
+
+<div id="logoOverlay"><img id="overlayImg" src="/assets/logo.png" alt="TI-LEX-AL" width="300" height="300"></div>
+
+<div id="chatPlatform">
+  <div class="tb">
+    <div class="tb-l">
+      <button class="hmb" onclick="toggleSidebar()"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <img class="tb-av" id="topbarAvatar" src="/assets/logo.png" alt="AL" width="32" height="32" onclick="toggleContactPopup()">
+      <div><div class="tb-n">TI-LEX-AL</div><div class="tb-s"><span class="tb-dot"></span> Online</div></div>
+    </div>
+    <div class="tb-r">
+      <button class="mb" onclick="toggleModelPopup()">GPT-4o <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></button>
+      <button class="hmb" id="authAction" onclick="if(currentUser){handleLogout();}else{openAuth('login');}"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+    </div>
+  </div>
+
+  <div class="cm" id="chatMain"><div class="cw">
+    <div id="welcomeView" style="text-align:center;padding-top:30px;">
+      <img class="w-av" id="welcomeAvatar" src="/assets/logo.png" alt="AL" width="80" height="80">
+      <h2 class="w-t">Agent AL</h2>
+      <p class="w-s" data-i18n="agentDesc">Intelligence Artificielle Multi-Talents</p>
+      <div class="as"><span class="ad"></span> <span data-i18n="agentStatus">Agent AL chargé à 200%</span> ⚡</div>
+      <div class="cg" id="chipsContainer"></div>
+    </div>
+    <div id="messagesView" style="display:none;"></div>
+    <div id="imagesView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="gallery">Galerie IA</h2></div><div class="sg" id="imagesGrid"></div></div>
+    <div id="appsView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="apps">Applications</h2></div><div class="sg" id="appsGrid"></div></div>
+    <div id="projectsView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="projects">Projets</h2></div></div>
+    <div id="agentView" class="sv" style="display:none;"><div class="sh"><h2>Agent AL</h2></div><div class="sg" id="agentGrid"></div></div>
+    <div id="studyView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="study">Mode Étude</h2></div><div class="sg" id="studyGrid"></div></div>
+    <div id="searchView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="search">Recherche</h2></div></div>
+    <div id="createAgentView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="createAgent">Créer un Agent</h2></div><div id="createAgentForm" style="padding:20px;background:var(--bg3);border-radius:12px;border:1px solid var(--b2);"></div></div>
+    <div id="myAgentsView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="myAgents">Mes Agents</h2></div><div id="agentsList" style="padding:20px;"></div></div>
+    <div id="integrationsView" class="sv" style="display:none;"><div class="sh"><h2 data-i18n="integrations">Intégrations</h2></div></div>
+  </div></div>
+
+  <div class="ia"><div class="ib">
+    <button class="pb" onclick="togglePlusMenu()"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+    <input type="text" class="if" id="chatInput" data-i18n-placeholder="askPlaceholder" placeholder="Demander à TI-LEX-AL" autocomplete="off">
+    <button class="sndb" onclick="var m=document.getElementById('chatInput').value.trim();if(m)sendMessage(m);"><svg width="18" height="18" fill="#fff" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+  </div></div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="so" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="si" id="sidebar">
+  <div class="si-h">
+    <div class="si-s"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> <span data-i18n="searchBtn">Rechercher</span></div>
+    <button class="si-n" onclick="sidebarAction('new')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></button>
+  </div>
+  <div class="si-in" onclick="sidebarAction('newproject')"><span class="ic">+</span> <span data-i18n="newProject">Nouveau Projet</span></div>
+  <div class="si-dv"></div>
+  <div class="si-lb">Menu</div>
+  <div class="si-it" onclick="sidebarAction('new')"><span class="ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg></span> <span data-i18n="newSession">Nouvelle session</span></div>
+  <div class="si-it" onclick="sidebarAction('projects')"><span class="ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 7a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/></svg></span> <span data-i18n="projects">Projets</span></div>
+  <div class="si-it" onclick="sidebarAction('apps')"><span class="ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span> <span data-i18n="apps">Applications</span></div>
+  <div class="si-dv"></div>
+  <div class="si-lb">Agents IA 🤖</div>
+  <div class="si-it" onclick="navigateTo('myAgents');toggleSidebar();loadUserAgents().then(displayAgentsList);"><span class="ic">🤖</span> <span data-i18n="myAgents">Mes Agents</span></div>
+  <div class="si-it" onclick="navigateTo('createAgent');toggleSidebar();displayCreateAgentForm();"><span class="ic">✨</span> <span data-i18n="createAgent">Créer Agent</span></div>
+  <div class="si-dv"></div>
+
+  <!-- 🌍 LANGUE -->
+  <div class="si-lb">🌍 <span data-i18n="language">Langue</span></div>
+  <div class="lang-grid" id="langGrid"></div>
+  <div class="si-dv"></div>
+
+  <!-- 🎨 THÈMES -->
+  <div class="si-lb">🎨 <span data-i18n="theme">Thème</span></div>
+  <div class="tg">
+    <div class="tb-th active" id="themeBurnup" onclick="setTheme('burnup')"><div class="td" style="background:linear-gradient(135deg,#ff6600,#ff8c00)"></div>🔥</div>
+    <div class="tb-th" id="themeViolet" onclick="setTheme('violet')"><div class="td" style="background:linear-gradient(135deg,#a855f7,#7c3aed)"></div>💜</div>
+    <div class="tb-th" id="themeGold" onclick="setTheme('gold')"><div class="td" style="background:linear-gradient(135deg,#FFE135,#CCAA00)"></div>💰</div>
+  </div>
+  <div class="si-dv"></div>
+
+  <div class="si-lb" data-i18n="connected">Connecté</div>
+  <div class="ig">
+    <div class="ii" onclick="toggleIntegration('google')"><div class="il" style="background:#4285f4;color:#fff;">G</div><div class="iif"><div class="iin">Google</div></div><div class="ist off" id="intGoogle"></div></div>
+    <div class="ii" onclick="toggleIntegration('supabase')"><div class="il" style="background:#3ecf8e;color:#fff;">⚡</div><div class="iif"><div class="iin">Supabase</div></div><div class="ist on" id="intSupabase"></div></div>
+  </div>
+  <div class="si-dv"></div>
+  <div class="si-it" onclick="if(currentUser){handleLogout();toggleSidebar();}else{toggleSidebar();openAuth('login');}"><span class="ic" style="color:var(--p);"><svg width="18" height="18" fill="none" stroke="var(--p)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> <span data-i18n="login">Connexion</span></div>
+  <div class="si-ft">
+    <img class="si-fa" id="sidebarAvatar" src="/assets/logo.png" alt="User" width="32" height="32">
+    <div class="si-fn">TI-LEX-AL ▾</div>
+  </div>
+</div>
+
+<div class="pm" id="plusMenu">
+  <div class="pmi" onclick="plusAction('image')"><div class="pmico">🎨</div> <span data-i18n="images">Images IA</span></div>
+  <div class="pmi" onclick="plusAction('search')"><div class="pmico">🔍</div> <span data-i18n="search">Recherche</span></div>
+  <div class="pmi" onclick="plusAction('study')"><div class="pmico">📚</div> <span data-i18n="study">Étude</span></div>
+  <div class="pmi" onclick="plusAction('agent')"><div class="pmico">🤖</div> Agent AL</div>
+</div>
+
+<div class="mpop" id="modelPopup">
+  <div class="mph"></div>
+  <div class="mpt" data-i18n="modelTitle">Modèle IA</div>
+  <div class="mpo active" onclick="selectModel(this)"><div><div class="mpon">GPT-4o<span class="mponum">⚡</span></div><div class="mpod" data-i18n="modelPowerful">Le plus puissant</div></div><div class="mpc" style="opacity:1;">✓</div></div>
+  <div class="mpo" onclick="selectModel(this)"><div><div class="mpon">GPT-4o mini<span class="mponum">💨</span></div><div class="mpod" data-i18n="modelFast">Rapide & efficace</div></div><div class="mpc" style="opacity:0;">✓</div></div>
+  <div class="mptg"><div class="mptgt" data-i18n="webSearch">Mode Recherche Web 🔍</div><div class="ts on" onclick="this.classList.toggle('on');showToast(this.classList.contains('on')?T('searchOn'):T('searchOff'));"></div></div>
+</div>
+
+<div class="am" id="authModal">
+  <div class="ac">
+    <button class="ax" onclick="closeAuth()">✕</button>
+    <img class="aav" id="authAvatar" src="/assets/logo.png" alt="TI-LEX-AL" width="60" height="60">
+    <div class="atit" id="authTitle" data-i18n="login">Connexion</div>
+    <div class="asub" id="authSubtitle" data-i18n="authSub">Accède à tout le power 🔥</div>
+    <div class="ae" id="authError"></div>
+    <div class="asu" id="authSuccess"></div>
+    <div id="authForm">
+      <div class="aig"><div class="ail">Email</div><input class="ai" type="email" id="authEmail" placeholder="ton@email.com"></div>
+      <div class="aig"><div class="ail" data-i18n="password">Mot de passe</div><input class="ai" type="password" id="authPassword" placeholder="••••••••"></div>
+      <div class="aig" id="confirmGroup" style="display:none;"><div class="ail" data-i18n="confirm">Confirmer</div><input class="ai" type="password" id="authConfirm" placeholder="••••••••"></div>
+      <button class="ab" id="loginBtn" onclick="handleLogin()" data-i18n="loginBtn">Se connecter</button>
+      <button class="ab" id="signupBtn" style="display:none;" onclick="handleSignup()" data-i18n="signupBtn">Créer mon compte</button>
+    </div>
+    <div class="aft"><span data-i18n="noAccount">Pas de compte?</span> <a onclick="switchAuth()" data-i18n="signupLink">Inscris-toi</a></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ============ 🌍 i18n — SYSTÈME MULTILINGUE ============
+  var LANGS={
+    fr:{flag:'🇫🇷',name:'Français',dir:'ltr',
+      platform:'Plateforme IA',ai:'Intelligence Artificielle',enter:'Entrer',login:'Connexion',signup:'Inscription',
+      searchBtn:'Rechercher',newProject:'Nouveau Projet',newSession:'Nouvelle session',projects:'Projets',apps:'Applications',
+      myAgents:'Mes Agents',createAgent:'Créer Agent',language:'Langue',theme:'Thème',connected:'Connecté',
+      images:'Images IA',search:'Recherche',study:'Mode Étude',gallery:'Galerie IA',
+      modelTitle:'Modèle IA',modelPowerful:'Le plus puissant',modelFast:'Rapide & efficace',webSearch:'Mode Recherche Web 🔍',
+      askPlaceholder:'Demander à TI-LEX-AL',agentDesc:'Intelligence Artificielle Multi-Talents',agentStatus:'Agent AL chargé à 200%',
+      password:'Mot de passe',confirm:'Confirmer',loginBtn:'Se connecter',signupBtn:'Créer mon compte',
+      noAccount:'Pas de compte?',signupLink:'Inscris-toi',authSub:'Accède à tout le power 🔥',
+      searchOn:'🔍 Recherche activée!',searchOff:'❌ Recherche désactivée',
+      chipCode:'💻 Code',chipSearch:'🔍 Recherche',chipWrite:'✍️ Écriture',chipOrg:'📋 Organisation',chipStudy:'📚 Étude',chipDebug:'🐛 Debug',
+      toast_newSession:'✨ Nouvelle session!',toast_newProject:'🚀 Nouveau projet!',toast_hello:'😎 TI-LEX-AL te salue!',
+      toast_connect:'🔐 Connecte-toi!',toast_fillAll:'⚠️ Remplis tout!',toast_created:'créé! 🔥',toast_deleted:'🗑️ Supprimé!',
+      toast_bye:'👋 À plus!',toast_yo:'🔥 Yo',
+    },
+    en:{flag:'🇬🇧',name:'English',dir:'ltr',
+      platform:'AI Platform',ai:'Artificial Intelligence',enter:'Enter',login:'Login',signup:'Sign Up',
+      searchBtn:'Search',newProject:'New Project',newSession:'New Session',projects:'Projects',apps:'Applications',
+      myAgents:'My Agents',createAgent:'Create Agent',language:'Language',theme:'Theme',connected:'Connected',
+      images:'AI Images',search:'Search',study:'Study Mode',gallery:'AI Gallery',
+      modelTitle:'AI Model',modelPowerful:'Most powerful',modelFast:'Fast & efficient',webSearch:'Web Search Mode 🔍',
+      askPlaceholder:'Ask TI-LEX-AL',agentDesc:'Multi-Talented Artificial Intelligence',agentStatus:'Agent AL loaded at 200%',
+      password:'Password',confirm:'Confirm',loginBtn:'Sign in',signupBtn:'Create account',
+      noAccount:'No account?',signupLink:'Sign up',authSub:'Access all the power 🔥',
+      searchOn:'🔍 Search enabled!',searchOff:'❌ Search disabled',
+      chipCode:'💻 Code',chipSearch:'🔍 Search',chipWrite:'✍️ Writing',chipOrg:'📋 Organize',chipStudy:'📚 Study',chipDebug:'🐛 Debug',
+      toast_newSession:'✨ New session!',toast_newProject:'🚀 New project!',toast_hello:'😎 TI-LEX-AL says hi!',
+      toast_connect:'🔐 Please login!',toast_fillAll:'⚠️ Fill all fields!',toast_created:'created! 🔥',toast_deleted:'🗑️ Deleted!',
+      toast_bye:'👋 See you!',toast_yo:'🔥 Yo',
+    },
+    es:{flag:'🇪🇸',name:'Español',dir:'ltr',
+      platform:'Plataforma IA',ai:'Inteligencia Artificial',enter:'Entrar',login:'Iniciar sesión',signup:'Registrarse',
+      searchBtn:'Buscar',newProject:'Nuevo Proyecto',newSession:'Nueva sesión',projects:'Proyectos',apps:'Aplicaciones',
+      myAgents:'Mis Agentes',createAgent:'Crear Agente',language:'Idioma',theme:'Tema',connected:'Conectado',
+      images:'Imágenes IA',search:'Búsqueda',study:'Modo Estudio',gallery:'Galería IA',
+      modelTitle:'Modelo IA',modelPowerful:'El más potente',modelFast:'Rápido y eficiente',webSearch:'Búsqueda Web 🔍',
+      askPlaceholder:'Preguntar a TI-LEX-AL',agentDesc:'Inteligencia Artificial Multi-Talento',agentStatus:'Agente AL cargado al 200%',
+      password:'Contraseña',confirm:'Confirmar',loginBtn:'Iniciar sesión',signupBtn:'Crear cuenta',
+      noAccount:'¿Sin cuenta?',signupLink:'Regístrate',authSub:'Accede a todo el poder 🔥',
+      searchOn:'🔍 Búsqueda activada!',searchOff:'❌ Búsqueda desactivada',
+      chipCode:'💻 Código',chipSearch:'🔍 Buscar',chipWrite:'✍️ Escritura',chipOrg:'📋 Organizar',chipStudy:'📚 Estudiar',chipDebug:'🐛 Debug',
+      toast_newSession:'✨ Nueva sesión!',toast_newProject:'🚀 Nuevo proyecto!',toast_hello:'😎 TI-LEX-AL te saluda!',
+      toast_connect:'🔐 Inicia sesión!',toast_fillAll:'⚠️ Llena todo!',toast_created:'creado! 🔥',toast_deleted:'🗑️ Eliminado!',
+      toast_bye:'👋 ¡Hasta luego!',toast_yo:'🔥 Hey',
+    },
+    zh:{flag:'🇨🇳',name:'中文',dir:'ltr',
+      platform:'AI 平台',ai:'人工智能',enter:'进入',login:'登录',signup:'注册',
+      searchBtn:'搜索',newProject:'新项目',newSession:'新会话',projects:'项目',apps:'应用',
+      myAgents:'我的代理',createAgent:'创建代理',language:'语言',theme:'主题',connected:'已连接',
+      images:'AI 图像',search:'搜索',study:'学习模式',gallery:'AI 画廊',
+      modelTitle:'AI 模型',modelPowerful:'最强大',modelFast:'快速高效',webSearch:'网络搜索 🔍',
+      askPlaceholder:'向 TI-LEX-AL 提问',agentDesc:'多才多艺的人工智能',agentStatus:'Agent AL 已加载 200%',
+      password:'密码',confirm:'确认',loginBtn:'登录',signupBtn:'创建账户',
+      noAccount:'没有账户？',signupLink:'注册',authSub:'解锁全部力量 🔥',
+      searchOn:'🔍 搜索已启用！',searchOff:'❌ 搜索已禁用',
+      chipCode:'💻 代码',chipSearch:'🔍 搜索',chipWrite:'✍️ 写作',chipOrg:'📋 组织',chipStudy:'📚 学习',chipDebug:'🐛 调试',
+      toast_newSession:'✨ 新会话！',toast_newProject:'🚀 新项目！',toast_hello:'😎 你好！',
+      toast_connect:'🔐 请登录！',toast_fillAll:'⚠️ 填写所有！',toast_created:'已创建！🔥',toast_deleted:'🗑️ 已删除！',
+      toast_bye:'👋 再见！',toast_yo:'🔥 嘿',
+    },
+    hi:{flag:'🇮🇳',name:'हिन्दी',dir:'ltr',
+      platform:'AI प्लेटफ़ॉर्म',ai:'कृत्रिम बुद्धिमत्ता',enter:'प्रवेश',login:'लॉगिन',signup:'पंजीकरण',
+      searchBtn:'खोजें',newProject:'नया प्रोजेक्ट',newSession:'नया सत्र',projects:'प्रोजेक्ट',apps:'ऐप्स',
+      myAgents:'मेरे एजेंट',createAgent:'एजेंट बनाएं',language:'भाषा',theme:'थीम',connected:'जुड़ा हुआ',
+      images:'AI छवियां',search:'खोज',study:'अध्ययन',gallery:'AI गैलरी',
+      modelTitle:'AI मॉडल',modelPowerful:'सबसे शक्तिशाली',modelFast:'तेज़ और कुशल',webSearch:'वेब खोज 🔍',
+      askPlaceholder:'TI-LEX-AL से पूछें',agentDesc:'बहु-प्रतिभाशाली AI',agentStatus:'Agent AL 200% लोड',
+      password:'पासवर्ड',confirm:'पुष्टि करें',loginBtn:'लॉगिन करें',signupBtn:'खाता बनाएं',
+      noAccount:'खाता नहीं?',signupLink:'पंजीकरण करें',authSub:'पूरी शक्ति अनलॉक करें 🔥',
+      searchOn:'🔍 खोज सक्रिय!',searchOff:'❌ खोज बंद',
+      chipCode:'💻 कोड',chipSearch:'🔍 खोज',chipWrite:'✍️ लेखन',chipOrg:'📋 व्यवस्था',chipStudy:'📚 अध्ययन',chipDebug:'🐛 डीबग',
+      toast_newSession:'✨ नया सत्र!',toast_newProject:'🚀 नया प्रोजेक्ट!',toast_hello:'😎 नमस्ते!',
+      toast_connect:'🔐 लॉगिन करें!',toast_fillAll:'⚠️ सब भरें!',toast_created:'बनाया! 🔥',toast_deleted:'🗑️ हटाया!',
+      toast_bye:'👋 फिर मिलेंगे!',toast_yo:'🔥 अरे',
+    },
+    ar:{flag:'🇸🇦',name:'العربية',dir:'rtl',
+      platform:'منصة ذكاء اصطناعي',ai:'ذكاء اصطناعي',enter:'دخول',login:'تسجيل الدخول',signup:'إنشاء حساب',
+      searchBtn:'بحث',newProject:'مشروع جديد',newSession:'جلسة جديدة',projects:'المشاريع',apps:'التطبيقات',
+      myAgents:'وكلائي',createAgent:'إنشاء وكيل',language:'اللغة',theme:'المظهر',connected:'متصل',
+      images:'صور ذكية',search:'بحث',study:'وضع الدراسة',gallery:'معرض AI',
+      modelTitle:'نموذج AI',modelPowerful:'الأقوى',modelFast:'سريع وفعال',webSearch:'بحث الويب 🔍',
+      askPlaceholder:'اسأل TI-LEX-AL',agentDesc:'ذكاء اصطناعي متعدد المواهب',agentStatus:'Agent AL محمّل 200%',
+      password:'كلمة المرور',confirm:'تأكيد',loginBtn:'تسجيل الدخول',signupBtn:'إنشاء حساب',
+      noAccount:'ليس لديك حساب؟',signupLink:'سجّل',authSub:'اكتشف كل القوة 🔥',
+      searchOn:'🔍 البحث مفعّل!',searchOff:'❌ البحث معطّل',
+      chipCode:'💻 كود',chipSearch:'🔍 بحث',chipWrite:'✍️ كتابة',chipOrg:'📋 تنظيم',chipStudy:'📚 دراسة',chipDebug:'🐛 تصحيح',
+      toast_newSession:'✨ جلسة جديدة!',toast_newProject:'🚀 مشروع جديد!',toast_hello:'😎 مرحبا!',
+      toast_connect:'🔐 سجّل الدخول!',toast_fillAll:'⚠️ املأ الكل!',toast_created:'تم الإنشاء! 🔥',toast_deleted:'🗑️ تم الحذف!',
+      toast_bye:'👋 إلى اللقاء!',toast_yo:'🔥 يا',
+    },
+    pt:{flag:'🇧🇷',name:'Português',dir:'ltr',
+      platform:'Plataforma IA',ai:'Inteligência Artificial',enter:'Entrar',login:'Login',signup:'Cadastro',
+      searchBtn:'Pesquisar',newProject:'Novo Projeto',newSession:'Nova sessão',projects:'Projetos',apps:'Aplicativos',
+      myAgents:'Meus Agentes',createAgent:'Criar Agente',language:'Idioma',theme:'Tema',connected:'Conectado',
+      images:'Imagens IA',search:'Pesquisa',study:'Modo Estudo',gallery:'Galeria IA',
+      modelTitle:'Modelo IA',modelPowerful:'Mais poderoso',modelFast:'Rápido e eficiente',webSearch:'Pesquisa Web 🔍',
+      askPlaceholder:'Perguntar ao TI-LEX-AL',agentDesc:'IA Multi-Talentos',agentStatus:'Agent AL carregado 200%',
+      password:'Senha',confirm:'Confirmar',loginBtn:'Entrar',signupBtn:'Criar conta',
+      noAccount:'Sem conta?',signupLink:'Cadastre-se',authSub:'Acesse todo o poder 🔥',
+      searchOn:'🔍 Pesquisa ativada!',searchOff:'❌ Pesquisa desativada',
+      chipCode:'💻 Código',chipSearch:'🔍 Pesquisar',chipWrite:'✍️ Escrita',chipOrg:'📋 Organizar',chipStudy:'📚 Estudar',chipDebug:'🐛 Debug',
+      toast_newSession:'✨ Nova sessão!',toast_newProject:'🚀 Novo projeto!',toast_hello:'😎 Olá!',
+      toast_connect:'🔐 Faça login!',toast_fillAll:'⚠️ Preencha tudo!',toast_created:'criado! 🔥',toast_deleted:'🗑️ Deletado!',
+      toast_bye:'👋 Até logo!',toast_yo:'🔥 Ei',
+    },
+    de:{flag:'🇩🇪',name:'Deutsch',dir:'ltr',
+      platform:'KI-Plattform',ai:'Künstliche Intelligenz',enter:'Eintreten',login:'Anmelden',signup:'Registrieren',
+      searchBtn:'Suchen',newProject:'Neues Projekt',newSession:'Neue Sitzung',projects:'Projekte',apps:'Anwendungen',
+      myAgents:'Meine Agenten',createAgent:'Agent erstellen',language:'Sprache',theme:'Design',connected:'Verbunden',
+      images:'KI-Bilder',search:'Suche',study:'Lernmodus',gallery:'KI-Galerie',
+      modelTitle:'KI-Modell',modelPowerful:'Am leistungsstärksten',modelFast:'Schnell & effizient',webSearch:'Websuche 🔍',
+      askPlaceholder:'TI-LEX-AL fragen',agentDesc:'Multi-Talent KI',agentStatus:'Agent AL 200% geladen',
+      password:'Passwort',confirm:'Bestätigen',loginBtn:'Anmelden',signupBtn:'Konto erstellen',
+      noAccount:'Kein Konto?',signupLink:'Registrieren',authSub:'Volle Power freischalten 🔥',
+      searchOn:'🔍 Suche aktiviert!',searchOff:'❌ Suche deaktiviert',
+      chipCode:'💻 Code',chipSearch:'🔍 Suche',chipWrite:'✍️ Schreiben',chipOrg:'📋 Organisieren',chipStudy:'📚 Lernen',chipDebug:'🐛 Debug',
+      toast_newSession:'✨ Neue Sitzung!',toast_newProject:'🚀 Neues Projekt!',toast_hello:'😎 Hallo!',
+      toast_connect:'🔐 Bitte anmelden!',toast_fillAll:'⚠️ Alles ausfüllen!',toast_created:'erstellt! 🔥',toast_deleted:'🗑️ Gelöscht!',
+      toast_bye:'👋 Tschüss!',toast_yo:'🔥 Hey',
+    },
+    ja:{flag:'🇯🇵',name:'日本語',dir:'ltr',
+      platform:'AIプラットフォーム',ai:'人工知能',enter:'入る',login:'ログイン',signup:'登録',
+      searchBtn:'検索',newProject:'新プロジェクト',newSession:'新セッション',projects:'プロジェクト',apps:'アプリ',
+      myAgents:'マイエージェント',createAgent:'エージェント作成',language:'言語',theme:'テーマ',connected:'接続済み',
+      images:'AI画像',search:'検索',study:'学習モード',gallery:'AIギャラリー',
+      modelTitle:'AIモデル',modelPowerful:'最も強力',modelFast:'高速＆効率的',webSearch:'ウェブ検索 🔍',
+      askPlaceholder:'TI-LEX-ALに聞く',agentDesc:'マルチタレントAI',agentStatus:'Agent AL 200%ロード済',
+      password:'パスワード',confirm:'確認',loginBtn:'ログイン',signupBtn:'アカウント作成',
+      noAccount:'アカウントなし？',signupLink:'登録する',authSub:'フルパワー解放 🔥',
+      searchOn:'🔍 検索オン！',searchOff:'❌ 検索オフ',
+      chipCode:'💻 コード',chipSearch:'🔍 検索',chipWrite:'✍️ 執筆',chipOrg:'📋 整理',chipStudy:'📚 学習',chipDebug:'🐛 デバッグ',
+      toast_newSession:'✨ 新セッション！',toast_newProject:'🚀 新プロジェクト！',toast_hello:'😎 こんにちは！',
+      toast_connect:'🔐 ログインして！',toast_fillAll:'⚠️ 全て入力！',toast_created:'作成！🔥',toast_deleted:'🗑️ 削除！',
+      toast_bye:'👋 またね！',toast_yo:'🔥 やあ',
+    },
+    ko:{flag:'🇰🇷',name:'한국어',dir:'ltr',
+      platform:'AI 플랫폼',ai:'인공지능',enter:'입장',login:'로그인',signup:'회원가입',
+      searchBtn:'검색',newProject:'새 프로젝트',newSession:'새 세션',projects:'프로젝트',apps:'앱',
+      myAgents:'내 에이전트',createAgent:'에이전트 생성',language:'언어',theme:'테마',connected:'연결됨',
+      images:'AI 이미지',search:'검색',study:'학습 모드',gallery:'AI 갤러리',
+      modelTitle:'AI 모델',modelPowerful:'가장 강력한',modelFast:'빠르고 효율적',webSearch:'웹 검색 🔍',
+      askPlaceholder:'TI-LEX-AL에게 물어보기',agentDesc:'다재다능한 AI',agentStatus:'Agent AL 200% 로드',
+      password:'비밀번호',confirm:'확인',loginBtn:'로그인',signupBtn:'계정 만들기',
+      noAccount:'계정이 없나요?',signupLink:'가입하기',authSub:'모든 파워를 잠금해제 🔥',
+      searchOn:'🔍 검색 활성화!',searchOff:'❌ 검색 비활성화',
+      chipCode:'💻 코드',chipSearch:'🔍 검색',chipWrite:'✍️ 글쓰기',chipOrg:'📋 정리',chipStudy:'📚 학습',chipDebug:'🐛 디버그',
+      toast_newSession:'✨ 새 세션!',toast_newProject:'🚀 새 프로젝트!',toast_hello:'😎 안녕!',
+      toast_connect:'🔐 로그인하세요!',toast_fillAll:'⚠️ 모두 입력!',toast_created:'생성! 🔥',toast_deleted:'🗑️ 삭제!',
+      toast_bye:'👋 안녕!',toast_yo:'🔥 헤이',
+    }
+  };
+
+  var currentLang='fr';
+  function T(key){return(LANGS[currentLang]&&LANGS[currentLang][key])||key;}
+  window.T=T;
+
+  function applyLang(){
+    var lang=LANGS[currentLang];if(!lang)return;
+    document.documentElement.lang=currentLang;
+    document.documentElement.dir=lang.dir||'ltr';
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key=el.getAttribute('data-i18n');
+      if(lang[key])el.textContent=lang[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+      var key=el.getAttribute('data-i18n-placeholder');
+      if(lang[key])el.placeholder=lang[key];
+    });
+    // Rebuild chips
+    var cc=document.getElementById('chipsContainer');
+    if(cc)cc.innerHTML='<span class="chip" onclick="chipAction(\'code\')">'+T('chipCode')+'</span><span class="chip" onclick="chipAction(\'search\')">'+T('chipSearch')+'</span><span class="chip" onclick="chipAction(\'write\')">'+T('chipWrite')+'</span><span class="chip" onclick="chipAction(\'organize\')">'+T('chipOrg')+'</span><span class="chip" onclick="chipAction(\'study\')">'+T('chipStudy')+'</span><span class="chip" onclick="chipAction(\'debug\')">'+T('chipDebug')+'</span>';
+    // Update lang buttons
+    document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.dataset.lang===currentLang);});
+  }
+
+  window.setLang=function(lang){
+    if(!LANGS[lang])return;
+    currentLang=lang;
+    applyLang();
+    try{localStorage.setItem('tilexal-lang',lang);}catch(e){}
+    showToast(LANGS[lang].flag+' '+LANGS[lang].name);
+  };
+
+  // Build lang grid
+  function buildLangGrid(){
+    var g=document.getElementById('langGrid');if(!g)return;
+    g.innerHTML='';
+    Object.keys(LANGS).forEach(function(k){
+      var l=LANGS[k];
+      var b=document.createElement('div');
+      b.className='lang-btn'+(k===currentLang?' active':'');
+      b.dataset.lang=k;
+      b.textContent=l.flag+' '+l.name;
+      b.onclick=function(){setLang(k);};
+      g.appendChild(b);
+    });
+  }
+
+  // ============ CONFIG ============
+  var SUPABASE_URL='https://rnuripmfozlxenryxhdc.supabase.co';
+  var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJudXJpcG1mb3pseGVucnl4aGRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNjE0NTEsImV4cCI6MjA4ODgzNzQ1MX0.kpF2fkUUShtCpkFGWuPBIRBaNnRVZNGIRmyuwpZZnmA';
+  var sb,currentUser=null,TYPEWRITER_SPEED=12,THINKING_DELAY=200,API_URL="/api";
+  var conversationHistory=[],agentsData=[],currentAgent=null,plusOpen=false;
+
+  // ============ THEMES ============
+  window.setTheme=function(theme){
+    document.documentElement.setAttribute('data-theme',theme);
+    document.querySelectorAll('.tb-th').forEach(function(b){b.classList.remove('active');});
+    var btn=document.getElementById('theme'+theme.charAt(0).toUpperCase()+theme.slice(1));
+    if(btn)btn.classList.add('active');
+    updateMatrixColors(theme);
+    try{localStorage.setItem('tilexal-theme',theme);}catch(e){}
+    var names={burnup:'🔥 Burnup',violet:'💜 Violet',gold:'💰 Gold'};
+    showToast(names[theme]||theme);
+  };
+
+  function updateMatrixColors(theme){
+    if(theme==='violet'){cN=["#e0c3fc","#d4b8ff","#a855f7","#c084fc","#b57edc","#f0e6ff","#e0c3fc","#a855f7"];cG=["#a855f7","#7c3aed","#9333ea","#a855f7","#c084fc","#a855f7","#9333ea","#7c3aed"];}
+    else if(theme==='gold'){cN=["#fff","#fffde0","#FFE135","#FFD700","#FFEC8B","#fff","#fff","#FFE135"];cG=["#FFE135","#CCAA00","#FFD700","#FFE135","#FFD700","#FFE135","#CCAA00","#FFD700"];}
+    else{cN=["#fff","#ffeeee","#ff6600","#ff8c00","#ff9933","#fff","#fff","#ff6600"];cG=["#00ff41","#00cc33","#33ff66","#00ff41","#39ff14","#00ff41","#33ff66","#00cc33"];}
+  }
+
+  // ============ INIT ============
+  function initApp(){
+    if(typeof window.supabase==='undefined'){setTimeout(initApp,100);return;}
+    sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    checkSession();
+    sb.auth.onAuthStateChange(function(ev,s){if(s&&s.user){currentUser=s.user;updateUIForUser();}else{currentUser=null;updateUIForLogout();}});
+  }
+  setTimeout(initApp,50);
+
+  var tiLexALMaster={id:'tilex-al-master',user_id:'system',name:'TI-LEX-AL',emoji:'🔥',personality:'🔥 Hardcore',specialty:'TOUT',is_active:true,is_master:true,can_search:true,created_at:new Date().toISOString()};
+  currentAgent=tiLexALMaster;agentsData=[tiLexALMaster];
+
+  // ============ AUTH ============
+  var authMode='login';
+  window.openAuth=function(mode){authMode=mode;document.getElementById('authModal').classList.add('open');var isSignup=mode==='signup';document.getElementById('authTitle').textContent=T(isSignup?'signup':'login');document.getElementById('confirmGroup').style.display=isSignup?'block':'none';document.getElementById('loginBtn').style.display=isSignup?'none':'block';document.getElementById('signupBtn').style.display=isSignup?'block':'none';};
+  window.closeAuth=function(){document.getElementById('authModal').classList.remove('open');};
+  window.switchAuth=function(){openAuth(authMode==='login'?'signup':'login');};
+  function showAuthError(m){var e=document.getElementById('authError');e.textContent=m;e.style.display='block';setTimeout(function(){e.style.display='none';},4000);}
+  function showAuthSuccess(m){var e=document.getElementById('authSuccess');e.textContent=m;e.style.display='block';}
+  window.handleLogin=async function(){var e=document.getElementById('authEmail').value,p=document.getElementById('authPassword').value;if(!e||!p){showAuthError(T('toast_fillAll'));return;}var b=document.getElementById('loginBtn');b.disabled=true;try{var r=await sb.auth.signInWithPassword({email:e,password:p});b.disabled=false;b.textContent=T('loginBtn');if(r.error){showAuthError(r.error.message);return;}showAuthSuccess('✅');setTimeout(function(){closeAuth();if(matrixState==='normal')enterTransition();},1000);}catch(err){b.disabled=false;b.textContent=T('loginBtn');}};
+  window.handleSignup=async function(){var e=document.getElementById('authEmail').value,p=document.getElementById('authPassword').value,c=document.getElementById('authConfirm').value;if(!e||!p||!c){showAuthError(T('toast_fillAll'));return;}if(p.length<6){showAuthError('Min. 6');return;}if(p!==c){showAuthError('≠');return;}var b=document.getElementById('signupBtn');b.disabled=true;try{var r=await sb.auth.signUp({email:e,password:p});b.disabled=false;b.textContent=T('signupBtn');if(r.error){showAuthError(r.error.message);return;}showAuthSuccess('✅');setTimeout(function(){closeAuth();if(matrixState==='normal')enterTransition();},1500);}catch(err){b.disabled=false;b.textContent=T('signupBtn');}};
+  window.handleLogout=async function(){await sb.auth.signOut();currentUser=null;showToast(T('toast_bye'));updateUIForLogout();};
+  async function checkSession(){var r=await sb.auth.getSession();if(r.data.session&&r.data.session.user){currentUser=r.data.session.user;updateUIForUser();setTimeout(enterTransition,500);}else{currentAgent=tiLexALMaster;agentsData=[tiLexALMaster];}}
+  function updateUIForUser(){var n=(currentUser.email||'').split('@')[0];var f=document.querySelector('.si-fn');if(f)f.textContent=n+' ▾';showToast(T('toast_yo')+' '+n+'!');loadUserAgents();}
+  function updateUIForLogout(){var f=document.querySelector('.si-fn');if(f)f.textContent='TI-LEX-AL ▾';currentAgent=tiLexALMaster;agentsData=[tiLexALMaster];}
+
+  // ============ AGENTS ============
+  window.loadUserAgents=async function(){if(!currentUser||!currentUser.id){currentAgent=tiLexALMaster;agentsData=[tiLexALMaster];return[tiLexALMaster];}try{var{data}=await sb.from('agents').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});agentsData=[tiLexALMaster,...(data||[])];if(!currentAgent||currentAgent.is_master)currentAgent=agentsData[0];return agentsData;}catch(e){agentsData=[tiLexALMaster];currentAgent=tiLexALMaster;return agentsData;}};
+  window.createAgent=async function(cfg){if(!currentUser){showToast(T('toast_connect'));return null;}if(!cfg.name){showToast(T('toast_fillAll'));return null;}try{var{data,error}=await sb.from('agents').insert({user_id:currentUser.id,name:cfg.name,personality:cfg.personality||'',specialty:cfg.specialty||'',emoji:cfg.emoji||'🤖',is_active:false,created_at:new Date().toISOString()}).select();if(error)return null;showToast('✅ '+cfg.name+' '+T('toast_created'));await loadUserAgents();return data[0];}catch(e){return null;}};
+  window.deleteAgent=async function(id){if(!currentUser)return;try{await sb.from('agents').delete().eq('id',id).eq('user_id',currentUser.id);showToast(T('toast_deleted'));await loadUserAgents();displayAgentsList();}catch(e){}};
+  window.activateAgent=async function(id){if(!currentUser)return;try{await sb.from('agents').update({is_active:false}).eq('user_id',currentUser.id);if(!id){currentAgent=tiLexALMaster;await loadUserAgents();displayAgentsList();return;}var{data}=await sb.from('agents').update({is_active:true}).eq('id',id).select();currentAgent=(data&&data[0])||tiLexALMaster;await loadUserAgents();displayAgentsList();}catch(e){}};
+  window.displayAgentsList=function(){var c=document.getElementById('agentsList');if(!c)return;c.innerHTML='';agentsData.forEach(function(a){var el=document.createElement('div');var iM=a.is_master,iA=a.is_active;el.style.cssText='background:'+(iM?'var(--pb)':'var(--bg3)')+';border:2px solid '+(iA||iM?'var(--p)':'var(--b2)')+';border-radius:12px;padding:16px;margin-bottom:12px';var mb=iM?'<span style="display:inline-block;background:var(--p);color:#000;padding:3px 8px;border-radius:4px;font-weight:800;font-size:10px;margin-left:8px">⭐</span>':'';el.innerHTML='<div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px">'+(a.emoji||'🤖')+'</span><div><div style="font-weight:700">'+a.name+mb+'</div><div style="font-size:12px;color:var(--t3)">'+(a.specialty||'')+'</div></div></div>'+(iM?'':'<div style="display:flex;gap:8px;margin-top:12px"><button onclick="activateAgent(\''+a.id+'\')" style="flex:1;padding:8px;background:'+(iA?'var(--p)':'var(--bg4)')+';border:1px solid var(--b2);border-radius:8px;color:var(--t);font-weight:700;font-size:12px;cursor:pointer">'+(iA?'✅':'▶')+'</button><button onclick="deleteAgent(\''+a.id+'\')" style="padding:8px 12px;background:rgba(255,26,26,.1);border:1px solid rgba(255,26,26,.3);border-radius:8px;color:#ff6b6b;font-weight:700;font-size:12px;cursor:pointer">🗑️</button></div>');c.appendChild(el);});};
+  window.displayCreateAgentForm=function(){var f=document.getElementById('createAgentForm');if(!f)return;f.innerHTML='<div style="display:flex;flex-direction:column;gap:14px"><div><label style="font-size:12px;font-weight:700;color:var(--t3)">'+T('createAgent')+'</label><input id="agentName" type="text" placeholder="Agent" style="width:100%;padding:11px;background:var(--bg2);border:1px solid var(--b2);border-radius:8px;color:var(--t);font-size:14px;box-sizing:border-box"></div><div><input id="agentEmoji" type="text" placeholder="🤖" maxlength="2" style="width:60px;padding:11px;background:var(--bg2);border:1px solid var(--b2);border-radius:8px;color:var(--t);font-size:20px;text-align:center"></div><button onclick="submitCreateAgent()" style="background:var(--pg);color:#fff;border:none;padding:13px;border-radius:8px;font-weight:900;cursor:pointer">🚀 '+T('createAgent').toUpperCase()+'</button></div>';};
+  window.submitCreateAgent=function(){createAgent({name:document.getElementById('agentName')?.value||'',emoji:document.getElementById('agentEmoji')?.value||'🤖',personality:'',specialty:''});};
+
+  // ============ MESSAGES ============
+  var chatInput=document.getElementById('chatInput');
+  var replies=["🎯 Agent AL! 💪","✨ En action! 🔥","💎 Voici...","🚀 BOOM! 🎬","💻 Code mode! 🔥","🔍 Searching... 🕵️","📚 Learning! 🏆","😎 Let's go!"];
+  function sanitizeHTML(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+  window.sendMessage=function(msg){if(!msg)return;chatInput.value='';navigateTo('messages');var mv=document.getElementById('messagesView');var ud=document.createElement('div');ud.style.cssText='text-align:right;margin:12px 0;animation:fadeIn .3s ease';ud.innerHTML='<div style="display:inline-block;background:var(--pg);border-radius:18px 18px 4px 18px;padding:12px 18px;max-width:80%;text-align:left;color:#fff;font-size:15px;font-weight:600">'+sanitizeHTML(msg)+'</div>';mv.appendChild(ud);
+    var av=currentAgent?(currentAgent.emoji||'🤖'):'🤖';
+    setTimeout(function(){var bd=document.createElement('div');bd.style.cssText='text-align:left;margin:12px 0;display:flex;gap:10px;align-items:flex-start;animation:fadeIn .3s ease';var txt=document.createElement('div');txt.style.cssText='background:var(--bg3);border:1px solid var(--b2);border-radius:4px 18px 18px 18px;padding:12px 18px;max-width:85%;font-size:15px;font-weight:500;color:var(--t2);line-height:1.5';var reply=replies[Math.floor(Math.random()*replies.length)];bd.innerHTML='<div style="font-weight:700;font-size:18px">'+av+'</div>';bd.appendChild(txt);mv.appendChild(bd);var sc=document.getElementById('chatMain');if(sc)sc.scrollTop=sc.scrollHeight;var i=0,clean=reply.replace(/<[^>]*>/g,'');txt.textContent='';(function type(){if(i<clean.length){txt.textContent+=clean.charAt(i);i++;if(sc)sc.scrollTop=sc.scrollHeight;setTimeout(type,TYPEWRITER_SPEED);}})();},200);};
+
+  // ============ UI ============
+  window.showToast=function(t){var el=document.createElement('div');el.className='toast';el.textContent=t;document.body.appendChild(el);requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show');});});setTimeout(function(){el.classList.remove('show');setTimeout(function(){el.remove();},500);},2000);};
+  window.chipAction=function(t){sendMessage(t);};
+  window.sidebarAction=function(type){toggleSidebar();if(type==='new'){goHome();showToast(T('toast_newSession'));}else if(type==='apps')navigateTo('apps');else if(type==='newproject'){navigateTo('projects');showToast(T('toast_newProject'));}else if(type==='projects')navigateTo('projects');};
+  window.plusAction=function(type){plusOpen=false;document.getElementById('plusMenu').classList.remove('open');if(type==='image')navigateTo('images');if(type==='search')navigateTo('search');if(type==='study')navigateTo('study');if(type==='agent')navigateTo('agent');};
+  window.toggleContactPopup=function(){showToast(T('toast_hello'));};
+  var views=['welcomeView','messagesView','imagesView','appsView','projectsView','agentView','studyView','searchView','integrationsView','createAgentView','myAgentsView'];
+  window.navigateTo=function(v){views.forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});var t=document.getElementById(v+'View');if(t)t.style.display='block';document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');};
+  window.goHome=function(){navigateTo('welcome');document.getElementById('messagesView').innerHTML='';currentAgent=tiLexALMaster;};
+  window.enterTransition=function(){if(matrixState!=="normal")return;document.getElementById('menuPage').classList.add('hide');document.getElementById('logoOverlay').classList.add('show');matrixState="transitioning";tStart=Date.now();};
+  window.toggleSidebar=function(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');document.getElementById('modelPopup').classList.remove('open');plusOpen=false;document.getElementById('plusMenu').classList.remove('open');};
+  window.toggleModelPopup=function(){document.getElementById('modelPopup').classList.toggle('open');};
+  window.selectModel=function(el){document.querySelectorAll('.mpo').forEach(function(o){o.classList.remove('active');o.querySelector('.mpc').style.opacity='0';});el.classList.add('active');el.querySelector('.mpc').style.opacity='1';setTimeout(toggleModelPopup,300);};
+  window.togglePlusMenu=function(){plusOpen=!plusOpen;document.getElementById('plusMenu').classList.toggle('open',plusOpen);};
+  document.addEventListener('click',function(e){if(plusOpen&&!e.target.closest('.pm')&&!e.target.closest('.pb')){plusOpen=false;document.getElementById('plusMenu').classList.remove('open');}var p=document.getElementById('modelPopup');if(p&&p.classList.contains('open')&&!e.target.closest('.mpop')&&!e.target.closest('.mb'))p.classList.remove('open');});
+  var integrations={supabase:true};
+  window.toggleIntegration=function(n){integrations[n]=!integrations[n];var el=document.getElementById('int'+n.charAt(0).toUpperCase()+n.slice(1));if(el){el.classList.toggle('on',integrations[n]);el.classList.toggle('off',!integrations[n]);}};
+
+  // ============ MATRIX ============
+  var canvas=document.getElementById("matrix"),ctx=canvas.getContext("2d");
+  canvas.width=innerWidth;canvas.height=innerHeight;
+  var letters="アカサタナハマヤラワABCDEFGHIJKLMNOPQRSTUV0123456789@#$%",fontSize=15;
+  var columns=Math.floor(canvas.width/fontSize),drops=[];
+  for(var i=0;i<columns;i++)drops[i]=Math.random()*-100;
+  var matrixState="normal",tStart=0,TDUR=4500,speed=.35,direction=1,matrixPaused=false;
+  var cN=["#fff","#ffeeee","#ff6600","#ff8c00","#ff9933","#fff","#fff","#ff6600"];
+  var cG=["#00ff41","#00cc33","#33ff66","#00ff41","#39ff14","#00ff41","#33ff66","#00cc33"];
+  function lerp(a,b,t){var ah=parseInt(a.replace('#',''),16),bh=parseInt(b.replace('#',''),16);var ar=ah>>16,ag=(ah>>8)&0xff,ab=ah&0xff;var br=bh>>16,bg=(bh>>8)&0xff,bb=bh&0xff;return'#'+((Math.round(ar+(br-ar)*t)<<16)+(Math.round(ag+(bg-ag)*t)<<8)+Math.round(ab+(bb-ab)*t)).toString(16).padStart(6,'0');}
+  function getC(i){if(matrixState==="normal"||matrixState==="platform")return cN[i%cN.length];if(matrixState==="transitioning"){var e=Date.now()-tStart;return lerp(cN[i%cN.length],cG[i%cG.length],Math.min(e/(TDUR*.4),1));}return cG[i%cG.length];}
+  function draw(){if(matrixPaused){requestAnimationFrame(draw);return;}
+    if(matrixState==="transitioning"){var e=Date.now()-tStart;if(e<TDUR*.3){speed=.35-(e/(TDUR*.3))*.5;direction=1;}else{speed=((e-TDUR*.3)/(TDUR*.7))*.8;direction=-1;}if(e>=TDUR){matrixState="platform";speed=.2;direction=1;document.getElementById('chatPlatform').classList.add('visible');}}
+    ctx.fillStyle=matrixState==="platform"?"rgba(0,0,0,.06)":"rgba(0,0,0,.03)";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.font=fontSize+"px monospace";
+    for(var i=0;i<drops.length;i++){var t=letters[Math.floor(Math.random()*letters.length)],x=i*fontSize,y=drops[i]*fontSize;ctx.fillStyle=getC(Math.floor(Math.random()*8));if(Math.random()>.94){ctx.shadowColor=getComputedStyle(document.documentElement).getPropertyValue('--matrix-glow')||'rgba(255,102,0,.6)';ctx.shadowBlur=10;}else{ctx.shadowColor="transparent";ctx.shadowBlur=0;}ctx.fillText(t,x,y);if(direction>0){if(drops[i]*fontSize>canvas.height&&Math.random()>.99)drops[i]=0;drops[i]+=speed;}else{if(drops[i]*fontSize<0&&Math.random()>.99)drops[i]=canvas.height/fontSize;drops[i]-=speed;}}ctx.shadowColor="transparent";ctx.shadowBlur=0;requestAnimationFrame(draw);}
+  requestAnimationFrame(draw);
+  window.addEventListener("resize",function(){canvas.width=innerWidth;canvas.height=innerHeight;columns=Math.floor(canvas.width/fontSize);drops=[];for(var i=0;i<columns;i++)drops[i]=Math.random()*-100;});
+  document.addEventListener('visibilitychange',function(){matrixPaused=document.hidden;});
+
+  // ============ BOOT ============
+  buildLangGrid();
+  try{var sl=localStorage.getItem('tilexal-lang');if(sl&&LANGS[sl])currentLang=sl;}catch(e){}
+  try{var st=localStorage.getItem('tilexal-theme');if(st)setTheme(st);}catch(e){}
+  applyLang();
+})();
+</script>
+</body>
+</html>
