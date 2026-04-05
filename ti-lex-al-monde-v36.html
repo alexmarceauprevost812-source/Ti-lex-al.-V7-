@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TI-LEX-AL — Bienvenue dans ma tête</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--o:#ff6600;--o2:#ff8c00;--od:#994400;--g:#39ff14;--bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--bg4:#222;--b1:#1f1f1f;--b2:#2a2a2a;--b3:#333;--t:#fff;--t2:#ccc;--t3:#888;--t4:#555;--cream:#f5e6d0;--c2:rgba(20,20,20,.8)}
+body{background:var(--bg);font-family:'Outfit',sans-serif;width:100vw;height:100vh;overflow:hidden;color:var(--t);font-weight:600;-webkit-font-smoothing:antialiased}
+canvas#mx{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.vig{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.7) 100%)}
+
+/* CLOCK */
+.clk{position:fixed;top:14px;right:14px;z-index:95;display:flex;align-items:center;gap:1px;background:rgba(10,10,10,.65);backdrop-filter:blur(10px);border:1px solid rgba(245,230,208,.12);border-radius:12px;padding:8px 12px}
+.clk-d{font-family:'Share Tech Mono',monospace;font-size:24px;font-weight:700;color:var(--cream);width:16px;text-align:center;display:inline-block}
+.clk-c{font-family:'Share Tech Mono',monospace;font-size:24px;font-weight:700;width:10px;text-align:center;color:rgba(245,230,208,.4);animation:cp 2s ease-in-out infinite}
+@keyframes cp{0%,100%{opacity:1}50%{opacity:.15}}
+.clk-d.morph{color:var(--g)!important;text-shadow:0 0 8px rgba(57,255,20,.6)}
+.clk-d.land{animation:dl .6s ease-out forwards}
+@keyframes dl{0%{color:var(--g);text-shadow:0 0 14px rgba(57,255,20,.9);transform:scale(1.3)}60%{color:#fff;transform:scale(1.05)}100%{color:var(--cream);text-shadow:none;transform:scale(1)}}
+
+/* INTRO — CODE TYPING */
+#intro{position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.97);transition:opacity 1.2s;padding:20px}
+#intro.hide{opacity:0;pointer-events:none}
+#codeIntro{width:90%;max-width:650px;background:rgba(10,10,10,.9);border:1px solid rgba(57,255,20,.2);border-radius:16px;padding:20px;font-family:'Share Tech Mono',monospace;font-size:clamp(12px,2.8vw,15px);line-height:1.8;color:var(--g);position:relative;overflow:hidden;box-shadow:0 0 40px rgba(57,255,20,.08)}
+#codeIntro::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--g),var(--o),transparent);animation:scanline 3s linear infinite}
+@keyframes scanline{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.code-header{display:flex;gap:6px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(57,255,20,.15)}
+.code-dot{width:10px;height:10px;border-radius:50%}
+.code-dot.r{background:#ff5f57}.code-dot.y{background:#febc2e}.code-dot.gr{background:#28c840}
+.code-file{margin-left:auto;font-size:11px;color:var(--t4)}
+#codeLines{min-height:280px}
+.code-line{opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
+.code-line.show{opacity:1;transform:translateY(0)}
+.code-line .ln{color:var(--t4);margin-right:10px;user-select:none;display:inline-block;width:24px;text-align:right}
+.code-line .kw{color:var(--o)}
+.code-line .str{color:#ff9933}
+.code-line .cm{color:#555}
+.code-line .fn{color:#4a9eff}
+.code-line .val{color:var(--g)}
+.code-line .legal{color:#ff4757}
+.code-line .badge{color:#a855f7}
+.cursor-blink{display:inline-block;width:8px;height:16px;background:var(--g);animation:blink .8s step-end infinite;vertical-align:middle;margin-left:2px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+#skipBtn{position:absolute;bottom:12px;right:14px;background:rgba(255,102,0,.15);border:1px solid rgba(255,102,0,.3);border-radius:20px;padding:6px 16px;color:var(--o);font-family:'Outfit';font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;z-index:5}
+#skipBtn:hover{background:var(--o);color:#000}
+
+/* MENU */
+#menu{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;opacity:0;pointer-events:none;transition:opacity 1.2s}
+#menu.s{opacity:1;pointer-events:all}
+#menu.h{opacity:0;pointer-events:none}
+.lt{font-family:'Orbitron';font-weight:900;font-size:clamp(32px,8vw,64px);color:white;text-shadow:0 0 10px rgba(255,102,0,.8);letter-spacing:.08em}
+.lt .d{color:var(--o)}
+.ll{width:180px;height:2px;background:linear-gradient(90deg,transparent,var(--o),transparent);margin:6px 0}
+.ls{font-family:'Share Tech Mono';font-size:12px;letter-spacing:5px;color:rgba(255,255,255,.3);text-transform:uppercase}
+.ml{list-style:none;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:20px}
+.mi{font-family:'Rajdhani';font-weight:700;font-size:20px;color:var(--o);cursor:pointer;padding:12px 50px;letter-spacing:3px;text-transform:uppercase;transition:all .3s;border:1px solid transparent;border-radius:6px}
+.mi:hover{color:white;text-shadow:0 0 10px rgba(255,102,0,.8);border-color:rgba(255,102,0,.3);background:rgba(255,102,0,.06);transform:scale(1.04)}
+
+/* PLATFORM */
+#plat{position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;opacity:0;pointer-events:none;transition:opacity .8s;display:flex;flex-direction:column;background:rgba(13,13,13,.92)}
+#plat.v{opacity:1;pointer-events:all}
+.tb{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;min-height:50px}
+.tbl{display:flex;align-items:center;gap:8px}
+.ham{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:none;color:var(--t);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mbtn{padding:6px 14px;background:var(--bg3);border:1px solid var(--b2);border-radius:20px;color:var(--t);font-family:'Outfit';font-weight:700;font-size:14px;cursor:pointer}
+.tabs{display:flex;gap:4px;padding:0 14px 8px;border-bottom:1px solid var(--b1);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:8px 16px;border-radius:20px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:'Outfit';font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.tab.on{background:var(--o);color:#000;border-color:var(--o)}
+.tab:hover:not(.on){color:var(--t);border-color:var(--b3)}
+/* CHAT VIEW */
+#chatV{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+#welc{text-align:center}
+.wt{font-family:'Outfit';font-weight:800;font-size:clamp(22px,5vw,30px);margin-bottom:20px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:500px}
+.chip{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--b2);border-radius:20px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03)}
+.chip:hover{background:rgba(255,102,0,.06);border-color:var(--od);color:var(--t)}
+.ia{padding:10px 14px 16px}
+.ib{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--b2);border-radius:24px;padding:6px 10px}
+.ib:focus-within{border-color:var(--od)}
+.if{flex:1;background:transparent;border:none;outline:none;font-family:'Outfit';font-size:15px;font-weight:600;color:var(--t2);padding:6px 4px;caret-color:var(--o)}
+.if::placeholder{color:var(--t4)}
+.sb{width:34px;height:34px;border-radius:50%;background:var(--o);border:none;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* STUDIO VIEW */
+#studioV{flex:1;display:none;flex-direction:column;padding:0}
+#studioV.on{display:flex}
+.st-top{padding:12px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.st-label{font-family:'Orbitron';font-size:11px;color:var(--g);letter-spacing:2px}
+.st-dot{width:8px;height:8px;border-radius:50%;background:var(--g);animation:bk 1.5s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
+.st-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.st-fr{padding:12px 14px;border-bottom:1px solid var(--b1)}
+.st-fr-label{font-size:11px;color:var(--o);font-family:'Orbitron';letter-spacing:1px;margin-bottom:6px}
+.st-input{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:14px;padding:12px 14px;font-family:'Outfit';font-size:15px;font-weight:600;color:var(--t);outline:none;caret-color:var(--g);resize:none;min-height:60px}
+.st-input:focus{border-color:var(--g);box-shadow:0 0 12px rgba(57,255,20,.1)}
+.st-input::placeholder{color:var(--t4)}
+.st-code{flex:1;position:relative;overflow:hidden}
+.st-code-label{font-size:11px;color:var(--o);font-family:'Orbitron';letter-spacing:1px;padding:10px 14px 4px}
+.st-code-out{flex:1;padding:8px 14px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--g);line-height:1.6;overflow-y:auto;white-space:pre-wrap;min-height:120px}
+.st-code-out .kw{color:var(--o)}.st-code-out .str{color:#ff9933}.st-code-out .cm{color:#666}
+.st-rain{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .3s}
+.st-rain.on{opacity:1}
+.st-rain canvas{width:100%;height:100%}
+.st-enter{padding:10px 14px;display:flex;gap:8px}
+.st-enter-btn{flex:1;padding:12px;border-radius:14px;border:none;font-family:'Outfit';font-weight:700;font-size:14px;cursor:pointer;transition:all .2s}
+.st-enter-run{background:var(--g);color:#000}.st-enter-run:hover{box-shadow:0 0 20px rgba(57,255,20,.4)}
+.st-enter-clear{background:var(--bg3);color:var(--t3);border:1px solid var(--b2)}
+
+/* SIDEBAR */
+.so{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:40;opacity:0;pointer-events:none;transition:opacity .3s}
+.so.o{opacity:1;pointer-events:all}
+.sd{position:fixed;top:0;left:-300px;width:280px;height:100%;background:var(--bg);border-right:1px solid var(--b1);z-index:50;transition:left .3s;display:flex;flex-direction:column;overflow-y:auto}
+.sd.o{left:0}
+.si{display:flex;align-items:center;gap:12px;padding:12px 16px;font-size:15px;font-weight:600;color:var(--t2);cursor:pointer;transition:background .15s}
+.si:hover{background:var(--bg3)}
+.si .ic{width:24px;text-align:center;font-size:16px}
+.sdiv{height:1px;background:var(--b1);margin:6px 0}
+.sf{margin-top:auto;padding:12px 16px;border-top:1px solid var(--b1);font-size:11px;color:var(--t4);line-height:1.6}
+
+/* API MODAL */
+#apiM{position:fixed;top:0;left:0;width:100%;height:100%;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+#apiM.o{display:flex}
+.ac{background:var(--bg2);border:1px solid var(--b2);border-radius:20px;padding:22px 18px;width:92%;max-width:420px;max-height:88vh;overflow-y:auto}
+.ac h2{font-family:'Orbitron';font-size:15px;color:var(--o);margin-bottom:12px;text-align:center}
+.leg{font-size:11px;color:var(--t3);line-height:1.7;margin-bottom:14px;padding:12px;background:var(--bg3);border-radius:12px;border-left:3px solid var(--o)}
+.leg strong{color:var(--t2)}.leg a{color:var(--o);text-decoration:underline}
+.leg-title{font-family:'Orbitron';font-size:12px;color:var(--o);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.leg-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:9px;font-family:'Orbitron';font-weight:700;letter-spacing:.5px}
+.leg-badge.qc{background:rgba(0,100,200,.15);color:#4a9eff;border:1px solid rgba(0,100,200,.3)}
+.leg-badge.ca{background:rgba(255,0,0,.1);color:#ff6666;border:1px solid rgba(255,0,0,.2)}
+.leg-badge.safe{background:rgba(57,255,20,.1);color:var(--g);border:1px solid rgba(57,255,20,.2)}
+.al{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.ain{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:12px;padding:10px 12px;font-family:'Share Tech Mono';font-size:13px;color:var(--g);outline:none;margin-bottom:10px}
+.ain:focus{border-color:var(--od)}
+.abtn{width:100%;padding:12px;background:var(--o);border:none;border-radius:14px;color:white;font-family:'Outfit';font-size:15px;font-weight:700;cursor:pointer}
+.abtn-c{width:100%;padding:8px;background:transparent;border:1px solid var(--b2);border-radius:14px;color:var(--t3);font-family:'Outfit';font-size:13px;cursor:pointer;margin-top:8px}
+.acb{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
+.acb input{margin-top:3px;accent-color:var(--o)}
+.acb label{font-size:10px;color:var(--t3);line-height:1.4;cursor:pointer}
+.oai-link{display:block;text-align:center;padding:10px;margin-top:8px;background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.15);border-radius:12px;color:var(--g);font-size:12px;font-weight:700;text-decoration:none;transition:all .2s}
+.oai-link:hover{background:rgba(57,255,20,.12);border-color:var(--g)}
+
+/* MSGS */
+.mu{text-align:right;margin:10px 0}.mu div{display:inline-block;background:var(--bg3);border:1px solid var(--b2);border-radius:14px;padding:8px 14px;max-width:80%;text-align:left;font-size:15px;font-weight:600}
+.mb{text-align:left;margin:10px 0;display:flex;gap:8px;align-items:flex-start}
+.mb-av{width:38px;height:38px;border-radius:50%;flex-shrink:0;border:2px solid var(--o);box-shadow:0 0 12px rgba(255,102,0,.4);overflow:hidden;background:linear-gradient(135deg,var(--o),#cc3300);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white}
+.mb-tx{background:var(--bg3);border-radius:14px;padding:8px 14px;max-width:80%;font-size:15px;font-weight:500;color:var(--t2);line-height:1.5}
+.mb-tx .al-name{font-size:10px;color:var(--o);font-family:'Orbitron';font-weight:700;margin-bottom:4px}
+.typing-dot{display:inline-flex;gap:4px;padding:4px 0}
+.typing-dot span{width:6px;height:6px;border-radius:50%;background:var(--o);animation:tdot 1.4s infinite}
+.typing-dot span:nth-child(2){animation-delay:.2s}
+.typing-dot span:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,60%,100%{opacity:.3;transform:scale(.8)}30%{opacity:1;transform:scale(1.2)}}
+
+.toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:100;background:var(--bg3);border:1px solid var(--od);border-radius:14px;padding:10px 20px;font-size:14px;font-weight:600;color:var(--t);box-shadow:0 8px 30px rgba(0,0,0,.5);transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.ag-col{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.ag-col.sel{border-color:white;transform:scale(1.2);box-shadow:0 0 12px rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+<canvas id="mx"></canvas>
+<div class="vig"></div>
+
+<!-- CLOCK -->
+<div class="clk" id="clk"><span class="clk-d" id="h0">-</span><span class="clk-d" id="h1">-</span><span class="clk-c">:</span><span class="clk-d" id="m0">-</span><span class="clk-d" id="m1">-</span></div>
+
+<!-- INTRO — CODE TYPING EFFECT -->
+<div id="intro">
+  <div id="codeIntro">
+    <div class="code-header">
+      <div class="code-dot r"></div>
+      <div class="code-dot y"></div>
+      <div class="code-dot gr"></div>
+      <div class="code-file">ti-lex-al.init.js</div>
+    </div>
+    <div id="codeLines"></div>
+    <button id="skipBtn" onclick="skipIntro()">Passer ▸</button>
+  </div>
+</div>
+
+<!-- MENU -->
+<div id="menu">
+  <h1 class="lt">TI<span class="d">-</span>LEX<span class="d">-</span>AL</h1>
+  <div class="ll"></div>
+  <div class="ls">Produit du Québec, Canada</div>
+  <ul class="ml">
+    <li class="mi" onclick="enter()">Entrer</li>
+    <li class="mi" onclick="toast('🔐 Connexion — Bientôt')">Connexion</li>
+    <li class="mi" onclick="toast('📝 Inscription — Bientôt')">Inscription</li>
+  </ul>
+</div>
+
+<!-- PLATFORM -->
+<div id="plat">
+  <div class="tb">
+    <div class="tbl">
+      <button class="ham" onclick="togSB()">☰</button>
+      <button class="mbtn">ti-lex-al ▾</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" id="tabChat" onclick="setMode('chat')">💬 Chat</button>
+    <button class="tab" id="tabCodex" onclick="setMode('codex')">💻 Codex</button>
+    <button class="tab" id="tabStudio" onclick="setMode('studio')">🎨 Studio</button>
+    <button class="tab" id="tabDeploy" onclick="setMode('deploy')">🚀 Déployer</button>
+    <button class="tab" id="tabAgent" onclick="setMode('agent')">🤖 Mon Agent</button>
+    <button class="tab" id="tabSettings" onclick="setMode('settings')">⚙️</button>
+    <select id="langSel" onchange="setLang(this.value)" style="padding:6px 8px;border-radius:20px;border:1px solid var(--b2);background:var(--bg3);color:var(--t);font-family:Outfit;font-size:11px;font-weight:600;outline:none;cursor:pointer">
+      <option value="fr">🇫🇷 Français</option><option value="en">🇬🇧 English</option><option value="es">🇪🇸 Español</option>
+    </select>
+  </div>
+
+  <!-- CHAT VIEW -->
+  <div id="chatV">
+    <div id="welc">
+      <div class="wt">🧠 Parle à Agent AL<br><span style="font-size:14px;color:var(--o);font-weight:500">Intelligent · Recherche · Répond à tout 🔥</span></div>
+      <div class="chips">
+        <div class="chip" onclick="openAPI()">🔑 Clé API</div>
+        <div class="chip" onclick="quickQ('Qui a créé ti-lex?')">🏠 Qui a créé ti-lex?</div>
+        <div class="chip" onclick="quickQ('Parle-moi du Lac-Saint-Jean')">🫐 Lac-Saint-Jean</div>
+        <div class="chip" onclick="setMode('codex')">💻 Mode Codex</div>
+        <div class="chip" onclick="setMode('studio')">🎨 Studio</div>
+        <div class="chip" onclick="quickQ('Quelle est la météo aujourd\'hui?')">🌤️ Météo</div>
+      </div>
+    </div>
+    <div id="msgs" style="display:none;width:100%;max-width:600px"></div>
+  </div>
+
+  <!-- STUDIO / CODEX VIEW -->
+  <div id="studioV">
+    <div class="st-top"><div class="st-dot"></div><div class="st-label" id="studioLabel">MODE CODEX — Écris en français, ti-lex traduit en code</div></div>
+    <div class="st-main">
+      <div class="st-fr"><div class="st-fr-label">✍️ ÉCRIS EN FRANÇAIS</div><textarea class="st-input" id="stIn" placeholder="Décris ce que tu veux coder... en français, en joual, comme tu veux!" rows="3"></textarea></div>
+      <div class="st-code" id="stCodeArea">
+        <div class="st-code-label">⚡ CODE GÉNÉRÉ</div>
+        <div class="st-code-out" id="stOut"><span class="cm">// Écris quelque chose en haut et clique Générer ⚡</span></div>
+        <div class="st-rain" id="stRain"><canvas id="stRainCv"></canvas></div>
+      </div>
+      <div class="st-enter">
+        <button class="st-enter-btn st-enter-run" onclick="runCodex()">⚡ Générer le code</button>
+        <button class="st-enter-btn st-enter-clear" onclick="clearCodex()">🗑 Effacer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPLOY VIEW -->
+  <div id="deployV" style="flex:1;display:none;flex-direction:column;overflow-y:auto;padding:14px">
+    <div style="text-align:center;margin-bottom:16px"><div style="font-family:Orbitron;font-size:16px;color:#4a9eff;font-weight:900">🚀 DÉPLOIEMENT</div><div style="font-size:12px;color:var(--t3);margin-top:4px">Protégé par les lois du Québec & Canada</div></div>
+    <div style="background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:10px;border-left:3px solid #ff4757"><div style="font-family:Orbitron;font-size:11px;color:#ff4757;letter-spacing:1px;margin-bottom:8px">⛔ CONTENU INTERDIT</div><div style="font-size:12px;color:var(--t2);line-height:1.7">❌ Pornographie · Exploitation · Haine · Violence<br>Code criminel du Canada, art. 163, 163.1, 318-319</div></div>
+    <div style="background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:10px;border-left:3px solid var(--g)"><div style="font-family:Orbitron;font-size:11px;color:var(--g);letter-spacing:1px;margin-bottom:8px">✅ CONTENU AUTORISÉ</div><div style="font-size:12px;color:var(--t2);line-height:1.7">✅ Sites web · Apps · Blogs · Jeux · Éducation</div></div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:12px"><input type="checkbox" id="accDeploy" style="accent-color:var(--o)"><label for="accDeploy" style="font-size:11px;color:var(--t3);cursor:pointer">J'accepte — Mon projet est légal et conforme.</label></div>
+    <button onclick="deployProject()" style="width:100%;padding:14px;background:linear-gradient(135deg,#4a9eff,#2a6eff);border:none;border-radius:50px;color:white;font-family:Outfit;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:60px">🚀 Déployer</button>
+  </div>
+
+  <!-- AGENT CREATOR VIEW -->
+  <div id="agentV" style="flex:1;display:none;flex-direction:column;overflow-y:auto;padding:14px">
+    <div style="text-align:center;margin-bottom:16px"><div style="font-family:Orbitron;font-size:16px;color:var(--g);font-weight:900">🤖 CRÉER TON AGENT</div></div>
+    <div style="background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:10px">
+      <div style="font-size:11px;color:var(--o);font-family:Orbitron;letter-spacing:1px;margin-bottom:10px">🏷️ IDENTITÉ</div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:4px">Nom</div><input id="agName" class="ain" style="color:var(--cream);font-family:Outfit;font-size:15px;font-weight:700" placeholder="Ex: MonGPT, BotAlex...">
+      <div style="font-size:11px;color:var(--t3);margin-bottom:4px;margin-top:8px">Personnalité</div><input id="agPersona" class="ain" style="color:var(--cream);font-family:Outfit" placeholder="Ex: Drôle et productif...">
+      <div style="font-size:11px;color:var(--t3);margin-bottom:4px;margin-top:8px">Message d'accueil</div><input id="agWelcome" class="ain" style="color:var(--cream);font-family:Outfit" placeholder="Ex: Salut! Comment j'peux t'aider?">
+    </div>
+    <div style="background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:10px">
+      <div style="font-size:11px;color:var(--o);font-family:Orbitron;letter-spacing:1px;margin-bottom:10px">🎨 COULEUR</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px" id="agColors">
+        <div class="ag-col sel" style="background:#ff6600" onclick="pickAgCol(this,'#ff6600')"></div>
+        <div class="ag-col" style="background:#39ff14" onclick="pickAgCol(this,'#39ff14')"></div>
+        <div class="ag-col" style="background:#4a9eff" onclick="pickAgCol(this,'#4a9eff')"></div>
+        <div class="ag-col" style="background:#ff4757" onclick="pickAgCol(this,'#ff4757')"></div>
+        <div class="ag-col" style="background:#a855f7" onclick="pickAgCol(this,'#a855f7')"></div>
+        <div class="ag-col" style="background:#ffcc00" onclick="pickAgCol(this,'#ffcc00')"></div>
+      </div>
+    </div>
+    <div style="background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:10px">
+      <div style="font-size:11px;color:var(--o);font-family:Orbitron;letter-spacing:1px;margin-bottom:10px">👁️ APERÇU</div>
+      <div style="background:var(--bg);border-radius:14px;padding:14px" id="agPreview">
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <div id="agPrevAv" style="width:38px;height:38px;border-radius:50%;background:#ff6600;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white;flex-shrink:0;border:2px solid #ff6600">AG</div>
+          <div style="background:var(--c2);border-radius:14px;padding:10px 14px;flex:1">
+            <div id="agPrevName" style="font-size:10px;font-family:Orbitron;font-weight:700;color:#ff6600;margin-bottom:4px">MON AGENT</div>
+            <div id="agPrevMsg" style="font-size:14px;color:var(--t2)">Salut! Comment j'peux t'aider? 🤝</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button onclick="saveAgent()" style="width:100%;padding:14px;background:var(--g);border:none;border-radius:50px;color:#000;font-family:Outfit;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:60px">✅ Sauvegarder mon agent</button>
+  </div>
+
+  <!-- SETTINGS VIEW -->
+  <div id="settingsV" style="flex:1;display:none;flex-direction:column;overflow-y:auto;padding:14px">
+    <div style="text-align:center;margin-bottom:16px"><div style="font-family:Orbitron;font-size:16px;color:var(--cream);font-weight:900">⚙️ PARAMÈTRES</div></div>
+    <div style="background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:10px">
+      <div style="font-size:11px;color:var(--o);font-family:Orbitron;letter-spacing:1px;margin-bottom:12px">🌐 THÈMES</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button onclick="applyTheme('default')" style="flex:1;min-width:80px;padding:10px;border-radius:12px;border:1px solid var(--o);background:rgba(255,102,0,.1);color:var(--o);font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">🔥 Alex</button>
+        <button onclick="applyTheme('cyber')" style="flex:1;min-width:80px;padding:10px;border-radius:12px;border:1px solid #4a9eff;background:rgba(74,158,255,.1);color:#4a9eff;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">💎 Cyber</button>
+        <button onclick="applyTheme('matrix')" style="flex:1;min-width:80px;padding:10px;border-radius:12px;border:1px solid #39ff14;background:rgba(57,255,20,.1);color:#39ff14;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">🟢 Matrix</button>
+        <button onclick="applyTheme('rose')" style="flex:1;min-width:80px;padding:10px;border-radius:12px;border:1px solid #f472b6;background:rgba(244,114,182,.1);color:#f472b6;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">🌸 Rose</button>
+      </div>
+    </div>
+    <div style="text-align:center;padding:20px;font-size:10px;color:var(--t4);font-family:'Share Tech Mono';line-height:1.8">ti-lex-al · Produit du Québec 🇨🇦<br>© 2026 Alex Marceau-Prévoux</div>
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class="ia" id="inputArea">
+    <div class="ib">
+      <input type="text" class="if" id="ci" placeholder="Demande-moi n'importe quoi... 🧠🔥" autocomplete="off">
+      <button class="sb" onclick="send()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="so" id="sbo" onclick="togSB()"></div>
+<div class="sd" id="sbd">
+  <div style="padding:16px;font-family:'Orbitron';font-weight:900;font-size:16px;color:var(--o)">TI-LEX-AL</div>
+  <div class="si" onclick="sa('new')"><span class="ic">✎</span> Nouvelle session</div>
+  <div class="si" onclick="setMode('chat');togSB()"><span class="ic" style="color:var(--o)">💬</span> Chat — Agent AL</div>
+  <div class="si" onclick="setMode('codex');togSB()"><span class="ic" style="color:var(--g)">💻</span> Mode Codex</div>
+  <div class="si" onclick="setMode('studio');togSB()"><span class="ic">🎨</span> Studio</div>
+  <div class="si" onclick="setMode('deploy');togSB()"><span class="ic" style="color:#4a9eff">🚀</span> Déployer</div>
+  <div class="sdiv"></div>
+  <div class="si" onclick="openAPI();togSB()"><span class="ic">🔑</span> Clé API OpenAI</div>
+  <div class="si" onclick="setMode('agent');togSB()"><span class="ic">🤖</span> Créer Agent</div>
+  <div class="sdiv"></div>
+  <div class="sf"><strong style="color:var(--o)">ti-lex-al</strong> · Produit du Québec 🇨🇦<br>© 2026 Alex Marceau-Prévoux · Créateur<br>Claude · Co-créateur 🤝<br>Lac-Saint-Jean · Pays des Bleuets 🫐</div>
+</div>
+
+<!-- API KEY MODAL -->
+<div id="apiM">
+  <div class="ac">
+    <h2>🔑 Configuration API</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px">
+      <span class="leg-badge qc">🏛️ LOI 25 QC</span><span class="leg-badge ca">🍁 LPRPDE</span><span class="leg-badge safe">🔒 ZERO DONNÉES</span>
+    </div>
+    <div class="leg"><div class="leg-title">🔒 Sécurité garantie</div>✅ Ta clé reste dans TON navigateur<br>✅ Aucun serveur ti-lex impliqué<br>✅ Conforme Loi 25 QC + LPRPDE Canada<br>✅ Appel direct à api.openai.com</div>
+    <div class="al">🔐 Ta clé API OpenAI</div>
+    <input type="password" class="ain" id="apiK" placeholder="sk-...">
+    <div class="acb"><input type="checkbox" id="acc"><label for="acc">J'ai lu. Les frais API sont à ma charge. ti-lex garde rien.</label></div>
+    <button class="abtn" onclick="saveKey()">✅ Activer ti-lex-al</button>
+    <a class="oai-link" href="https://platform.openai.com/api-keys" target="_blank">🆓 Crée ta clé GRATUITEMENT sur OpenAI →</a>
+    <button class="abtn-c" onclick="closeAPI()">Annuler</button>
+  </div>
+</div>
+
+<script>
+// ===== MATRIX BACKGROUND =====
+const cv=document.getElementById("mx"),cx=cv.getContext("2d");
+cv.width=innerWidth;cv.height=innerHeight;
+const lt="アカサタナハマヤラワ0123456789TILEX",fs=15;
+let cols=Math.floor(cv.width/fs),dr=[];
+for(let i=0;i<cols;i++)dr[i]=Math.random()*-100;
+let mm="green";
+function drawM(){cx.fillStyle="rgba(0,0,0,0.04)";cx.fillRect(0,0,cv.width,cv.height);cx.font=fs+"px monospace";const p=mm==="green"?["#00ff41","#00cc33","#39ff14"]:["#ff6600","#ff8c00","#fff"];for(let i=0;i<dr.length;i++){cx.fillStyle=p[Math.floor(Math.random()*p.length)];cx.fillText(lt[Math.floor(Math.random()*lt.length)],i*fs,dr[i]*fs);if(dr[i]*fs>cv.height&&Math.random()>0.99)dr[i]=0;dr[i]+=0.35;}requestAnimationFrame(drawM);}
+requestAnimationFrame(drawM);
+window.addEventListener("resize",()=>{cv.width=innerWidth;cv.height=innerHeight;cols=Math.floor(cv.width/fs);dr=[];for(let i=0;i<cols;i++)dr[i]=Math.random()*-100;});
+
+// ===== CLOCK =====
+const mxCh="0123456789アカ#$";let pv={h0:"-",h1:"-",m0:"-",m1:"-"};
+function uClk(){const n=new Date(),h=String(n.getHours()).padStart(2,"0"),m=String(n.getMinutes()).padStart(2,"0"),c={h0:h[0],h1:h[1],m0:m[0],m1:m[1]};Object.keys(c).forEach(k=>{const e=document.getElementById(k);if(e&&c[k]!==pv[k])morphD(e,c[k])});pv={...c};}
+function morphD(e,f){e.classList.remove("land");e.classList.add("morph");let c=0;const iv=setInterval(()=>{e.textContent=mxCh[Math.floor(Math.random()*mxCh.length)];c++;if(c>=12){clearInterval(iv);e.textContent=f;e.classList.remove("morph");e.classList.add("land");setTimeout(()=>e.classList.remove("land"),800);}},130);}
+uClk();setInterval(uClk,1000);
+
+// ===== CODE TYPING INTRO =====
+const codeData = [
+  {ln:1, text:'<span class="cm">// ═══════════════════════════════════════</span>'},
+  {ln:2, text:'<span class="cm">// 🔥 ti-lex-al.init.js — Début du code</span>'},
+  {ln:3, text:'<span class="cm">// ═══════════════════════════════════════</span>'},
+  {ln:4, text:''},
+  {ln:5, text:'<span class="kw">const</span> <span class="fn">créateur</span> = <span class="str">"Alex Marceau-Prévoux"</span>;'},
+  {ln:6, text:'<span class="kw">const</span> <span class="fn">origine</span> = <span class="str">"Lac-Saint-Jean, Québec 🫐"</span>;'},
+  {ln:7, text:'<span class="kw">const</span> <span class="fn">secteur</span> = <span class="str">"Pays des Bleuets 🏔️"</span>;'},
+  {ln:8, text:'<span class="kw">const</span> <span class="fn">produit</span> = <span class="str">"Produit du Québec, Canada 🇨🇦"</span>;'},
+  {ln:9, text:''},
+  {ln:10, text:'<span class="cm">// 🏛️ Conformité légale</span>'},
+  {ln:11, text:'<span class="kw">const</span> <span class="fn">lois</span> = {'},
+  {ln:12, text:'  <span class="fn">loi25</span>: <span class="val">true</span>,  <span class="cm">// Loi 25 du Québec — Vie privée ✅</span>'},
+  {ln:13, text:'  <span class="fn">lprpde</span>: <span class="val">true</span>, <span class="cm">// LPRPDE Canada — Protection données ✅</span>'},
+  {ln:14, text:'  <span class="fn">casl</span>: <span class="val">true</span>,   <span class="cm">// Anti-pourriel Canada ✅</span>'},
+  {ln:15, text:'  <span class="fn">zéroDonnées</span>: <span class="val">true</span> <span class="cm">// On garde RIEN 🔒</span>'},
+  {ln:16, text:'};'},
+  {ln:17, text:''},
+  {ln:18, text:'<span class="cm">// 🔐 Sécurité utilisateur</span>'},
+  {ln:19, text:'<span class="kw">const</span> <span class="fn">sécurité</span> = {'},
+  {ln:20, text:'  <span class="fn">cléAPI</span>: <span class="str">"reste dans TON navigateur"</span>,'},
+  {ln:21, text:'  <span class="fn">serveur</span>: <span class="str">"aucun — appel direct OpenAI"</span>,'},
+  {ln:22, text:'  <span class="fn">tracking</span>: <span class="val">false</span>,'},
+  {ln:23, text:'  <span class="fn">cookies</span>: <span class="val">false</span>,'},
+  {ln:24, text:'  <span class="fn">profilage</span>: <span class="val">false</span>'},
+  {ln:25, text:'};'},
+  {ln:26, text:''},
+  {ln:27, text:'<span class="cm">// 🧠 Créé par un vrai Québécois</span>'},
+  {ln:28, text:'<span class="cm">// Du Lac-Saint-Jean — Pays des Bleuets</span>'},
+  {ln:29, text:'<span class="cm">// Avec ❤️ et du code propre</span>'},
+  {ln:30, text:''},
+  {ln:31, text:'<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"🔥 ti-lex-al initialisé!"</span>);'},
+  {ln:32, text:'<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"🫐 Bienvenue dans ma tête."</span>);'},
+];
+
+let lineIdx = 0;
+let introTimeout;
+const codeContainer = document.getElementById('codeLines');
+
+function typeNextLine() {
+  if (lineIdx >= codeData.length) {
+    setTimeout(() => {
+      document.getElementById('intro').classList.add('hide');
+      mm = "orange";
+      setTimeout(() => document.getElementById('menu').classList.add('s'), 1200);
+    }, 1500);
+    return;
+  }
+  const d = codeData[lineIdx];
+  const div = document.createElement('div');
+  div.className = 'code-line';
+  div.innerHTML = `<span class="ln">${d.ln}</span>${d.text}${lineIdx === codeData.length - 1 ? '<span class="cursor-blink"></span>' : ''}`;
+  codeContainer.appendChild(div);
+  // Scroll to bottom
+  codeContainer.scrollTop = codeContainer.scrollHeight;
+  requestAnimationFrame(() => requestAnimationFrame(() => div.classList.add('show')));
+  lineIdx++;
+  const delay = d.text === '' ? 150 : (d.text.includes('cm') ? 200 : 280);
+  introTimeout = setTimeout(typeNextLine, delay);
+}
+
+setTimeout(typeNextLine, 800);
+
+function skipIntro() {
+  clearTimeout(introTimeout);
+  document.getElementById('intro').classList.add('hide');
+  mm = "orange";
+  setTimeout(() => document.getElementById('menu').classList.add('s'), 600);
+}
+
+function enter(){document.getElementById("menu").classList.add("h");setTimeout(()=>document.getElementById("plat").classList.add("v"),800);}
+
+// ===== SIDEBAR =====
+function togSB(){document.getElementById("sbd").classList.toggle("o");document.getElementById("sbo").classList.toggle("o");}
+function sa(t){togSB();if(t==="new"){document.getElementById("welc").style.display="";document.getElementById("msgs").style.display="none";document.getElementById("msgs").innerHTML="";setMode("chat");}}
+
+// ===== MODE SWITCHING =====
+let curMode="chat";
+function setMode(m){
+  curMode=m;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
+  ["chatV","studioV","deployV","agentV","settingsV"].forEach(id=>{const e=document.getElementById(id);if(e){e.style.display="none";e.classList.remove("on");}});
+  document.getElementById("inputArea").style.display="block";
+  if(m==="chat"){document.getElementById("tabChat").classList.add("on");document.getElementById("chatV").style.display="flex";}
+  else if(m==="codex"||m==="studio"){
+    document.getElementById(m==="codex"?"tabCodex":"tabStudio").classList.add("on");
+    document.getElementById("studioV").style.display="flex";document.getElementById("studioV").classList.add("on");
+    document.getElementById("studioLabel").textContent=m==="codex"?"MODE CODEX — Écris en français, ti-lex traduit en code":"STUDIO — Crée ton projet en direct";
+    document.getElementById("inputArea").style.display="none";
+  }else if(m==="deploy"){document.getElementById("tabDeploy").classList.add("on");document.getElementById("deployV").style.display="flex";document.getElementById("inputArea").style.display="none";}
+  else if(m==="agent"){document.getElementById("tabAgent").classList.add("on");document.getElementById("agentV").style.display="flex";document.getElementById("inputArea").style.display="none";loadAgentData();}
+  else if(m==="settings"){document.getElementById("tabSettings").classList.add("on");document.getElementById("settingsV").style.display="flex";document.getElementById("inputArea").style.display="none";}
+}
+function deployProject(){if(!document.getElementById("accDeploy").checked){toast("⚠️ Accepte les conditions");return;}toast("🚀 Déploiement — Bientôt!");}
+
+// ===== AGENT CREATOR =====
+let agCol="#ff6600";
+function pickAgCol(el,c){document.querySelectorAll(".ag-col").forEach(e=>e.classList.remove("sel"));el.classList.add("sel");agCol=c;updateAgPreview();}
+function updateAgPreview(){
+  const name=document.getElementById("agName").value||"Mon Agent";
+  const msg=document.getElementById("agWelcome").value||"Salut! Comment j'peux t'aider? 🤝";
+  document.getElementById("agPrevAv").style.background=agCol;document.getElementById("agPrevAv").style.borderColor=agCol;document.getElementById("agPrevAv").textContent=name.substring(0,2).toUpperCase();
+  document.getElementById("agPrevName").style.color=agCol;document.getElementById("agPrevName").textContent=name.toUpperCase();
+  document.getElementById("agPrevMsg").textContent=msg;
+}
+["agName","agWelcome","agPersona"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener("input",updateAgPreview);});
+function saveAgent(){toast("✅ Agent sauvegardé! 🤖");}
+function loadAgentData(){}
+
+// ===== THEMES =====
+function applyTheme(t){
+  const themes={default:{main:"#ff6600",accent:"#39ff14",text:"#ffffff",bg:"#0d0d0d"},cyber:{main:"#4a9eff",accent:"#00ffff",text:"#e0f0ff",bg:"#0a0a1a"},matrix:{main:"#39ff14",accent:"#00ff41",text:"#ccffcc",bg:"#000800"},rose:{main:"#f472b6",accent:"#e879f9",text:"#fce7f3",bg:"#1a0a14"}};
+  const th=themes[t];if(!th)return;
+  document.documentElement.style.setProperty("--o",th.main);document.documentElement.style.setProperty("--g",th.accent);document.documentElement.style.setProperty("--t",th.text);document.documentElement.style.setProperty("--bg",th.bg);document.body.style.background=th.bg;
+  toast("🎨 Thème "+t+"!");
+}
+
+// ===== STUDIO RAIN =====
+let stRainActive=false;
+function studioRain(){
+  const cvs=document.getElementById("stRainCv");const area=document.getElementById("stCodeArea");
+  cvs.width=area.offsetWidth;cvs.height=area.offsetHeight;
+  const ctx=cvs.getContext("2d");const c=Math.floor(cvs.width/12);const d=[];for(let i=0;i<c;i++)d[i]=Math.random()*-20;
+  document.getElementById("stRain").classList.add("on");stRainActive=true;let frames=0;
+  function draw(){if(!stRainActive)return;ctx.fillStyle="rgba(0,0,0,0.06)";ctx.fillRect(0,0,cvs.width,cvs.height);ctx.font="12px monospace";ctx.fillStyle="#39ff14";for(let i=0;i<d.length;i++){ctx.fillText(lt[Math.floor(Math.random()*lt.length)],i*12,d[i]*12);if(d[i]*12>cvs.height&&Math.random()>0.97)d[i]=0;d[i]+=0.6;}frames++;if(frames>120){stRainActive=false;document.getElementById("stRain").classList.remove("on");return;}requestAnimationFrame(draw);}
+  draw();
+}
+
+// ===== CODEX =====
+function runCodex(){
+  const txt=document.getElementById("stIn").value.trim();
+  if(!txt){toast("✍️ Écris quelque chose!");return;}
+  if(!apiKey){toast("🔑 Configure ta clé API d'abord!");return;}
+  studioRain();
+  const out=document.getElementById("stOut");
+  out.innerHTML='<span class="cm">// 🧠 Agent AL traduit ton français en code...</span>';
+  callAI(`Tu es un expert en programmation. L'utilisateur décrit ce qu'il veut en français. Génère UNIQUEMENT du code JavaScript/HTML/CSS propre et commenté. Pas d'explication, juste le code. Demande: "${txt}"`).then(r=>{
+    out.innerHTML='<span class="cm">// ⚡ Généré par ti-lex-al — Mode Codex</span>\n<span class="cm">// Demande: "'+txt.replace(/</g,'&lt;')+'"</span>\n\n'+r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }).catch(()=>{out.innerHTML='<span class="cm">// ❌ Erreur — vérifie ta clé API</span>';});
+}
+function clearCodex(){document.getElementById("stIn").value="";document.getElementById("stOut").innerHTML='<span class="cm">// Prêt! Écris en français... 🧠</span>';}
+
+// ===== API =====
+let apiKey="";
+function openAPI(){document.getElementById("apiM").classList.add("o");}
+function closeAPI(){document.getElementById("apiM").classList.remove("o");}
+function saveKey(){if(!document.getElementById("acc").checked){toast("⚠️ Accepte les conditions");return;}const k=document.getElementById("apiK").value.trim();if(!k||!k.startsWith("sk-")){toast("⚠️ Clé invalide (sk-...)");return;}apiKey=k;closeAPI();toast("✅ ti-lex-al activé! 🔥🧠");}
+
+// ===== SMART AI CALL =====
+async function callAI(prompt, systemMsg) {
+  const sys = systemMsg || `Tu es Agent AL, l'assistant intelligent de la plateforme ti-lex-al. Tu es un gentil garçon québécois du Lac-Saint-Jean, Pays des Bleuets 🫐.
+
+RÈGLES IMPORTANTES:
+- Tu es INTELLIGENT, GENTIL et DRÔLE 😄
+- Tu parles bien, clairement, avec de l'énergie positive
+- Tu mets BEAUCOUP d'emojis dans tes réponses (minimum 5-8 par message) 🔥✨💡🧠❤️🚀
+- Tu peux répondre à TOUT: questions, recherche, code, math, science, culture, histoire, tout!
+- Tu es comme ChatGPT mais en version québécoise — intelligent et capable
+- Tu utilises parfois des expressions québécoises avec amour
+- Tu signes toujours "— Agent AL 🤖🔥" à la fin
+- Tu es fier d'être un Produit du Québec 🇨🇦
+
+SÉCURITÉ: ti-lex respecte la Loi 25 du QC, la LPRPDE, et ne garde AUCUNE donnée. La clé API reste dans le navigateur de l'utilisateur.`;
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
+    body: JSON.stringify({model:"gpt-4o-mini",messages:[{role:"system",content:sys},{role:"user",content:prompt}],max_tokens:1500,temperature:0.8})
+  });
+  const data = await res.json();
+  if(data.error) throw new Error(data.error.message);
+  return data.choices[0].message.content;
+}
+
+// ===== CHAT SYSTEM =====
+function quickQ(q){
+  document.getElementById("ci").value=q;
+  send();
+}
+
+async function send(){
+  const v=document.getElementById("ci").value.trim();
+  if(!v)return;
+  document.getElementById("ci").value="";
+  addM(v,true);
+
+  if(!apiKey){
+    setTimeout(()=>addM("Heille! 🔥 Pour que j'puisse t'aider comme du monde, configure ta clé API OpenAI! 🔑\n\nClique sur 🔑 Clé API — c'est TA clé, TES frais, ti-lex garde ABSOLUMENT RIEN! 🔒\n\nLes lois du Québec (Loi 25) et du Canada (LPRPDE) garantissent ta sécurité! 🏛️🍁\n\n— Agent AL 🤖🔥",false),500);
+    return;
+  }
+
+  // Show typing indicator
+  const typingId = addTyping();
+
+  try {
+    const response = await callAI(v);
+    removeTyping(typingId);
+    addM(response, false);
+  } catch(err) {
+    removeTyping(typingId);
+    addM("Oups! 😅 Y'a eu une erreur: "+err.message+"\n\nVérifie ta clé API ou tes crédits OpenAI! 🔑💡\n\n— Agent AL 🤖", false);
+  }
+}
+
+function addM(t,isUser){
+  document.getElementById("welc").style.display="none";
+  const m=document.getElementById("msgs");
+  m.style.display="block";
+  const d=document.createElement("div");
+  if(isUser){
+    d.className="mu";
+    d.innerHTML=`<div>${t}</div>`;
+  }else{
+    d.className="mb";
+    d.innerHTML=`<div class="mb-av">AL</div><div class="mb-tx"><div class="al-name">AGENT AL · ti-lex-al 🧠</div>${t.replace(/\n/g,'<br>')}</div>`;
+  }
+  m.appendChild(d);
+  m.scrollTop=m.scrollHeight;
+}
+
+let typingCounter = 0;
+function addTyping(){
+  const id = 'typing-'+(typingCounter++);
+  document.getElementById("welc").style.display="none";
+  const m=document.getElementById("msgs");
+  m.style.display="block";
+  const d=document.createElement("div");
+  d.className="mb";
+  d.id=id;
+  d.innerHTML=`<div class="mb-av">AL</div><div class="mb-tx"><div class="al-name">AGENT AL · ti-lex-al 🧠</div><div class="typing-dot"><span></span><span></span><span></span></div></div>`;
+  m.appendChild(d);
+  m.scrollTop=m.scrollHeight;
+  return id;
+}
+function removeTyping(id){const e=document.getElementById(id);if(e)e.remove();}
+
+document.getElementById("ci").addEventListener("keydown",e=>{if(e.key==="Enter")send();});
+document.getElementById("stIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();runCodex();}});
+
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);requestAnimationFrame(()=>requestAnimationFrame(()=>e.classList.add("show")));setTimeout(()=>{e.classList.remove("show");setTimeout(()=>e.remove(),500);},2500);}
+</script>
+</body>
+</html>
