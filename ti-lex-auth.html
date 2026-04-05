@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ti-lex-al — Connexion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--o:#ff6600;--g:#39ff14;--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--b1:#1f1f1f;--b2:#2a2a2a;--t:#fff;--t2:#ccc;--t3:#888;--t4:#555}
+body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--t);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+.auth-box{width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--b2);border-radius:24px;padding:30px 24px;position:relative;overflow:hidden}
+.auth-box::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--o),var(--g),transparent);animation:scan 4s linear infinite}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+.logo-area{text-align:center;margin-bottom:24px}
+.logo-tl{font-family:'Orbitron';font-weight:900;font-size:36px;color:var(--t);letter-spacing:.05em}
+.logo-tl span{color:var(--o)}
+.logo-sub{font-family:'Share Tech Mono';font-size:11px;letter-spacing:4px;color:var(--t4);margin-top:4px}
+
+.badges{display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.badge{padding:3px 10px;border-radius:20px;font-size:9px;font-family:'Orbitron';font-weight:700;letter-spacing:.5px}
+.b-qc{background:rgba(74,158,255,.1);color:#4a9eff;border:1px solid rgba(74,158,255,.25)}
+.b-safe{background:rgba(57,255,20,.1);color:var(--g);border:1px solid rgba(57,255,20,.2)}
+
+.tabs{display:flex;gap:4px;margin-bottom:20px}
+.tab{flex:1;padding:10px;border-radius:14px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:'Outfit';font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;text-align:center}
+.tab.on{background:var(--o);color:#000;border-color:var(--o)}
+
+.field{margin-bottom:14px}
+.field-label{font-size:11px;color:var(--t3);margin-bottom:4px;font-weight:600}
+.field-input{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:14px;padding:12px 14px;font-family:'Outfit';font-size:15px;font-weight:600;color:var(--t);outline:none;caret-color:var(--o);transition:border-color .2s}
+.field-input:focus{border-color:var(--o);box-shadow:0 0 12px rgba(255,102,0,.1)}
+.field-input::placeholder{color:var(--t4)}
+
+.btn-main{width:100%;padding:14px;border-radius:50px;border:none;font-family:'Outfit';font-weight:800;font-size:16px;cursor:pointer;transition:all .2s;margin-top:6px}
+.btn-login{background:var(--o);color:#fff}
+.btn-login:hover{box-shadow:0 0 24px rgba(255,102,0,.4)}
+.btn-signup{background:var(--g);color:#000}
+.btn-signup:hover{box-shadow:0 0 24px rgba(57,255,20,.4)}
+.btn-main:active{transform:scale(.97)}
+.btn-main:disabled{opacity:.5;cursor:not-allowed}
+
+.btn-back{display:block;text-align:center;margin-top:14px;color:var(--t3);font-size:13px;font-weight:600;text-decoration:none;transition:color .2s}
+.btn-back:hover{color:var(--o)}
+
+.msg{padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+.msg.err{display:block;background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);color:#ff4757}
+.msg.ok{display:block;background:rgba(57,255,20,.1);border:1px solid rgba(57,255,20,.3);color:var(--g)}
+
+.user-info{text-align:center;display:none}
+.user-info.show{display:block}
+.user-avatar{width:64px;height:64px;border-radius:50%;background:var(--o);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;margin:0 auto 12px;border:3px solid var(--o);box-shadow:0 0 20px rgba(255,102,0,.3)}
+.user-email{font-size:14px;color:var(--t2);margin-bottom:4px}
+.user-plan{font-size:11px;color:var(--g);font-family:'Orbitron';letter-spacing:1px}
+.btn-go{width:100%;padding:14px;border-radius:50px;border:none;background:var(--o);color:#fff;font-family:'Outfit';font-weight:800;font-size:16px;cursor:pointer;margin-top:16px}
+.btn-go:hover{box-shadow:0 0 24px rgba(255,102,0,.4)}
+.btn-logout{width:100%;padding:10px;border-radius:50px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:'Outfit';font-weight:600;font-size:13px;cursor:pointer;margin-top:8px}
+
+.legal{margin-top:16px;padding:12px;background:var(--bg3);border-radius:12px;border-left:3px solid var(--o);font-size:10px;color:var(--t4);line-height:1.6}
+.legal strong{color:var(--t3)}
+
+.footer{text-align:center;margin-top:16px;font-size:9px;color:var(--t4);font-family:'Share Tech Mono';line-height:1.8}
+</style>
+</head>
+<body>
+
+<div class="auth-box">
+  <!-- LOGO -->
+  <div class="logo-area">
+    <div class="logo-tl">TI<span>-</span>LEX<span>-</span>AL</div>
+    <div class="logo-sub">Produit du Québec, Canada</div>
+  </div>
+
+  <div class="badges">
+    <span class="badge b-qc">🏛️ LOI 25 QC</span>
+    <span class="badge b-safe">🔒 SÉCURISÉ</span>
+  </div>
+
+  <!-- MESSAGE -->
+  <div class="msg" id="msg"></div>
+
+  <!-- AUTH FORM -->
+  <div id="authForm">
+    <div class="tabs">
+      <button class="tab on" id="tabLogin" onclick="switchTab('login')">🔐 Connexion</button>
+      <button class="tab" id="tabSignup" onclick="switchTab('signup')">📝 Inscription</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <div class="field">
+        <div class="field-label">📧 Courriel</div>
+        <input class="field-input" type="email" id="loginEmail" placeholder="ton@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <div class="field-label">🔑 Mot de passe</div>
+        <input class="field-input" type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-main btn-login" id="btnLogin" onclick="doLogin()">🔐 Se connecter</button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signupForm" style="display:none">
+      <div class="field">
+        <div class="field-label">👤 Nom d'utilisateur</div>
+        <input class="field-input" type="text" id="signupName" placeholder="Ex: Alex, MonNom..." autocomplete="username">
+      </div>
+      <div class="field">
+        <div class="field-label">📧 Courriel</div>
+        <input class="field-input" type="email" id="signupEmail" placeholder="ton@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <div class="field-label">🔑 Mot de passe (min. 6 caractères)</div>
+        <input class="field-input" type="password" id="signupPass" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <button class="btn-main btn-signup" id="btnSignup" onclick="doSignup()">📝 Créer mon compte — GRATUIT</button>
+    </div>
+
+    <a href="/" class="btn-back">← Retour à ti-lex-al</a>
+  </div>
+
+  <!-- USER CONNECTED -->
+  <div class="user-info" id="userInfo">
+    <div class="user-avatar" id="userAvatar">AL</div>
+    <div class="user-email" id="userEmail"></div>
+    <div class="user-plan">PLAN GRATUIT ✅</div>
+    <button class="btn-go" onclick="window.location.href='/'">🔥 Entrer dans ti-lex-al</button>
+    <button class="btn-go" onclick="window.location.href='/store.html'" style="background:var(--g);color:#000;margin-top:8px">🛍️ ti-lex Store</button>
+    <button class="btn-logout" onclick="doLogout()">🚪 Déconnexion</button>
+  </div>
+
+  <!-- LEGAL -->
+  <div class="legal">
+    <strong>🔒 Sécurité:</strong> Mot de passe chiffré par Supabase Auth. Conforme <strong>Loi 25 du Québec</strong> et <strong>LPRPDE Canada</strong>. Aucune donnée vendue. Serveur au <strong>Canada (ca-central-1)</strong>. 🇨🇦
+  </div>
+
+  <div class="footer">
+    ti-lex-al · Créé au Lac-Saint-Jean · Pays des Bleuets 🫐<br>
+    © 2026 Alex Marceau-Prévoux
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.49.4/supabase.min.js"></script>
+<script>
+// ===== SUPABASE CONFIG =====
+const SUPABASE_URL = 'https://rnuripmfozlxenryxhdc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJudXJpcG1mb3pseGVucnl4aGRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNjE0NTEsImV4cCI6MjA4ODgzNzQ1MX0.kpF2fkUUShtCpkFGWuPBIRBaNnRVZNGIRmyuwpZZnmA';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ===== CHECK SESSION ON LOAD =====
+async function checkSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    showUser(session.user);
+  }
+}
+checkSession();
+
+// ===== TAB SWITCH =====
+function switchTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('on', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('on', tab === 'signup');
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+  hideMsg();
+}
+
+// ===== MESSAGES =====
+function showMsg(text, type) {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + type;
+}
+function hideMsg() {
+  document.getElementById('msg').className = 'msg';
+}
+
+// ===== LOGIN =====
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (!email || !pass) { showMsg('⚠️ Remplis ton courriel et mot de passe!', 'err'); return; }
+
+  document.getElementById('btnLogin').disabled = true;
+  document.getElementById('btnLogin').textContent = '⏳ Connexion...';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+
+  document.getElementById('btnLogin').disabled = false;
+  document.getElementById('btnLogin').textContent = '🔐 Se connecter';
+
+  if (error) {
+    showMsg('❌ ' + (error.message === 'Invalid login credentials' ? 'Courriel ou mot de passe incorrect!' : error.message), 'err');
+    return;
+  }
+  showMsg('✅ Connecté! Bienvenue! 🔥', 'ok');
+  setTimeout(() => showUser(data.user), 1000);
+}
+
+// ===== SIGNUP =====
+async function doSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPass').value;
+  if (!name || !email || !pass) { showMsg('⚠️ Remplis tous les champs!', 'err'); return; }
+  if (pass.length < 6) { showMsg('⚠️ Mot de passe: minimum 6 caractères!', 'err'); return; }
+
+  document.getElementById('btnSignup').disabled = true;
+  document.getElementById('btnSignup').textContent = '⏳ Création...';
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password: pass,
+    options: { data: { display_name: name, username: name.toLowerCase().replace(/[^a-z0-9]/g, '') } }
+  });
+
+  document.getElementById('btnSignup').disabled = false;
+  document.getElementById('btnSignup').textContent = '📝 Créer mon compte — GRATUIT';
+
+  if (error) {
+    showMsg('❌ ' + error.message, 'err');
+    return;
+  }
+
+  // Create profile
+  if (data.user) {
+    await sb.from('profiles').upsert({
+      id: data.user.id,
+      username: name.toLowerCase().replace(/[^a-z0-9]/g, ''),
+      display_name: name,
+      plan: 'free',
+      language: 'fr',
+      theme: 'dark'
+    });
+  }
+
+  showMsg('✅ Compte créé! Bienvenue dans ti-lex-al! 🔥🫐', 'ok');
+  setTimeout(() => showUser(data.user), 1500);
+}
+
+// ===== SHOW USER =====
+function showUser(user) {
+  document.getElementById('authForm').style.display = 'none';
+  document.getElementById('userInfo').classList.add('show');
+  const email = user.email || '';
+  const name = user.user_metadata?.display_name || user.user_metadata?.username || email.split('@')[0];
+  const initials = name.substring(0, 2).toUpperCase();
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userEmail').textContent = '👋 Salut ' + name + '!';
+}
+
+// ===== LOGOUT =====
+async function doLogout() {
+  await sb.auth.signOut();
+  document.getElementById('authForm').style.display = 'block';
+  document.getElementById('userInfo').classList.remove('show');
+  hideMsg();
+  showMsg('👋 Déconnecté! À bientôt!', 'ok');
+}
+
+// ===== ENTER KEY =====
+document.querySelectorAll('.field-input').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      if (document.getElementById('loginForm').style.display !== 'none') doLogin();
+      else doSignup();
+    }
+  });
+});
+</script>
+</body>
+</html>
