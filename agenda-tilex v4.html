@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Agenda — ti-lex-al</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--o:#ff6600;--g:#39ff14;--r:#ff4757;--bg:#0a0a0a;--c1:#141414;--c2:#1a1a1a;--c3:#222;--b1:#1f1f1f;--b2:#2a2a2a;--t:#fff;--t2:#ccc;--t3:#888;--t4:#555;--cream:#f5e6d0;--blue:#4a9eff}
+body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--t);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:rgba(10,10,10,.95);backdrop-filter:blur(10px);z-index:10}
+.hdr-title{font-family:'Orbitron';font-weight:900;font-size:15px;color:var(--o)}
+.hdr-btn{width:36px;height:36px;border-radius:50%;background:var(--c2);border:1px solid var(--b2);color:var(--t);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* CLOCK */
+.clk{display:flex;align-items:center;gap:1px;background:rgba(10,10,10,.65);backdrop-filter:blur(10px);border:1px solid rgba(245,230,208,.12);border-radius:10px;padding:6px 10px}
+.clk-d{font-family:'Share Tech Mono';font-size:20px;font-weight:700;color:var(--cream);width:14px;text-align:center}
+.clk-c{font-family:'Share Tech Mono';font-size:20px;font-weight:700;width:8px;text-align:center;color:rgba(245,230,208,.4);animation:cp 2s ease-in-out infinite}
+@keyframes cp{0%,100%{opacity:1}50%{opacity:.15}}
+.clk-d.morph{color:var(--g)!important;text-shadow:0 0 8px rgba(57,255,20,.6)}
+.clk-d.land{animation:dland .6s ease-out forwards}
+@keyframes dland{0%{color:var(--g);text-shadow:0 0 14px rgba(57,255,20,.9);transform:scale(1.3)}60%{color:#fff;transform:scale(1.05)}100%{color:var(--cream);text-shadow:none;transform:scale(1)}}
+
+/* CALENDAR */
+.cal{padding:12px;position:relative;overflow:hidden}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-month{font-family:'Orbitron';font-size:14px;color:var(--cream);transition:all .3s}
+.cal-nav-btn{background:none;border:1px solid var(--b2);color:var(--t3);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.cal-nav-btn:hover{border-color:var(--o);color:var(--o)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;transition:all .5s}
+.cal-grid.flip-left{animation:flipLeft .6s ease}
+.cal-grid.flip-right{animation:flipRight .6s ease}
+@keyframes flipLeft{0%{transform:translateX(0);opacity:1}40%{transform:translateX(-100%);opacity:0}41%{transform:translateX(100%);opacity:0}100%{transform:translateX(0);opacity:1}}
+@keyframes flipRight{0%{transform:translateX(0);opacity:1}40%{transform:translateX(100%);opacity:0}41%{transform:translateX(-100%);opacity:0}100%{transform:translateX(0);opacity:1}}
+.cal-label{text-align:center;font-size:11px;color:var(--t4);font-weight:700;padding:8px 0;font-family:'Share Tech Mono'}
+.cal-day{text-align:center;padding:8px 4px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;position:relative;min-height:40px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.cal-day:hover{background:rgba(255,102,0,.08)}
+.cal-day.today{background:var(--o);color:#000;font-weight:800;border-radius:50%;box-shadow:0 0 16px rgba(255,102,0,.4)}
+.cal-day.selected{background:rgba(255,102,0,.2);border:1px solid var(--o)}
+.cal-day.other{color:var(--t4);opacity:.3}
+.cal-day.passed{color:var(--t4);position:relative}
+.cal-day.passed::after{content:'✕';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:rgba(255,71,87,.3);font-weight:900;pointer-events:none}
+.cal-day.has-event .ev-dot{width:5px;height:5px;border-radius:50%;background:var(--g);position:absolute;bottom:3px;left:50%;transform:translateX(-50%)}
+.cal-month-tag{font-family:'Orbitron';font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:10px;display:inline-block;margin-left:8px}
+.cal-month-tag.future{background:rgba(255,102,0,.15);color:var(--o)}
+.cal-month-tag.past{background:rgba(255,71,87,.15);color:var(--r)}
+.cal-month-tag.current{background:rgba(57,255,20,.15);color:var(--g)}
+
+/* MATRIX OVERLAY for month transitions */
+.month-matrix{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;opacity:0;transition:opacity .2s}
+.month-matrix.on{opacity:1}
+.month-matrix canvas{width:100%;height:100%}
+
+/* EVENTS */
+.events{padding:12px 16px;padding-bottom:140px}
+.ev-title{font-family:'Orbitron';font-size:12px;color:var(--o);letter-spacing:2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ev-title-dot{width:8px;height:8px;border-radius:50%;background:var(--g);animation:bk 1.5s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
+.ev-card{background:var(--c2);border:1px solid var(--b2);border-radius:14px;padding:14px;margin-bottom:8px;transition:all .2s;border-left:3px solid var(--o)}
+.ev-card.green{border-left-color:var(--g)}.ev-card.blue{border-left-color:var(--blue)}.ev-card.red{border-left-color:var(--r)}
+.ev-time{font-family:'Share Tech Mono';font-size:13px;color:var(--o);font-weight:700}
+.ev-name{font-size:16px;font-weight:700;color:var(--t);margin-top:4px}
+.ev-desc{font-size:12px;color:var(--t3);margin-top:4px;line-height:1.4}
+.ev-notif{font-size:10px;color:var(--g);margin-top:4px}
+.ev-acts{display:flex;gap:6px;margin-top:8px}
+.ev-act{padding:5px 12px;border-radius:20px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:'Outfit';font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+.ev-act:hover{border-color:var(--o);color:var(--o)}
+.ev-act.del:hover{border-color:var(--r);color:var(--r)}
+.no-ev{text-align:center;padding:30px 20px;color:var(--t4);font-size:14px;line-height:1.6}
+.no-ev span{font-size:40px;display:block;margin-bottom:10px}
+
+/* BOTTOM BAR */
+.bottom{position:fixed;bottom:0;left:0;right:0;padding:10px 16px 18px;background:rgba(10,10,10,.95);backdrop-filter:blur(10px);border-top:1px solid var(--b1);display:flex;gap:8px}
+.add-btn{flex:1;padding:14px;background:var(--o);border:none;border-radius:50px;color:white;font-family:'Outfit';font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.settings-btn{width:50px;padding:14px;background:var(--c2);border:1px solid var(--b2);border-radius:50px;color:var(--t3);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* MODALS */
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--c1);border:1px solid var(--b2);border-radius:20px;padding:22px 18px;width:92%;max-width:400px;max-height:85vh;overflow-y:auto}
+.modal h2{font-family:'Orbitron';font-size:14px;color:var(--o);margin-bottom:14px;text-align:center}
+.m-label{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;margin-top:12px}
+.m-input{width:100%;background:var(--c3);border:1px solid var(--b2);border-radius:12px;padding:10px 14px;font-family:'Outfit';font-size:15px;color:var(--t);outline:none}
+.m-input:focus{border-color:var(--o)}
+.m-colors{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.m-col{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.m-col.sel{border-color:white;transform:scale(1.2)}
+.m-btns{display:flex;gap:8px;margin-top:16px}
+.m-btn{flex:1;padding:12px;border-radius:14px;border:none;font-family:'Outfit';font-weight:700;font-size:14px;cursor:pointer}
+.m-btn.save{background:var(--o);color:white}
+.m-btn.cancel{background:var(--c2);color:var(--t3);border:1px solid var(--b2)}
+
+/* NOTIF OPTION */
+.notif-row{display:flex;align-items:center;justify-content:space-between;background:var(--c3);border:1px solid var(--b2);border-radius:12px;padding:10px 14px;margin-top:10px}
+.notif-toggle{width:44px;height:24px;border-radius:12px;background:var(--b2);position:relative;cursor:pointer;transition:.3s;border:none}
+.notif-toggle.on{background:var(--g)}
+.notif-toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s}
+.notif-toggle.on::after{left:23px}
+.notif-time{display:flex;align-items:center;gap:8px;margin-top:8px}
+.notif-time select{background:var(--c3);border:1px solid var(--b2);border-radius:8px;padding:6px 10px;color:var(--t);font-family:'Outfit';font-size:13px;outline:none}
+
+/* SETTINGS PANEL */
+.set-panel{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,10,10,.98);z-index:60;display:none;flex-direction:column;overflow-y:auto}
+.set-panel.open{display:flex}
+.set-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:rgba(10,10,10,.95);backdrop-filter:blur(10px)}
+.set-body{padding:16px;padding-bottom:40px}
+.set-section{background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:12px}
+.set-section-title{font-family:'Orbitron';font-size:11px;color:var(--o);letter-spacing:1px;margin-bottom:12px}
+.set-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.set-row:last-child{margin-bottom:0}
+.set-row-label{font-size:13px;color:var(--t2)}
+.set-color-input{width:40px;height:30px;border:none;border-radius:8px;cursor:pointer;background:transparent}
+
+.signature{text-align:center;padding:24px 16px;font-family:'Share Tech Mono';font-size:11px;color:var(--t4);line-height:2}
+.signature .name{font-family:'Orbitron';font-size:13px;color:var(--o);font-weight:700}
+.signature .co{font-family:'Orbitron';font-size:11px;color:var(--blue);font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <button class="hdr-btn" onclick="history.back()">←</button>
+  <div class="hdr-title">📅 AGENDA</div>
+  <div class="clk"><span class="clk-d" id="h0">-</span><span class="clk-d" id="h1">-</span><span class="clk-c">:</span><span class="clk-d" id="m0">-</span><span class="clk-d" id="m1">-</span></div>
+</div>
+
+<div class="cal">
+  <div class="cal-nav">
+    <button class="cal-nav-btn" onclick="navM(-1)">◀</button>
+    <div><span class="cal-month" id="calM">--</span><span class="cal-month-tag" id="calTag"></span></div>
+    <button class="cal-nav-btn" onclick="navM(1)">▶</button>
+  </div>
+  <div class="cal-grid" id="calG"></div>
+  <div class="month-matrix" id="mxOverlay"><canvas id="mxCv"></canvas></div>
+</div>
+
+<div class="events">
+  <div class="ev-title"><div class="ev-title-dot"></div><span id="evDateLabel">AUJOURD'HUI</span></div>
+  <div id="evList"></div>
+</div>
+
+<div class="bottom">
+  <button class="add-btn" onclick="openAdd()">+ Ajouter événement</button>
+  <button class="settings-btn" onclick="openSettings()">⚙️</button>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-bg" id="addM">
+  <div class="modal">
+    <h2>📅 Nouvel événement</h2>
+    <div class="m-label">Titre</div>
+    <input class="m-input" id="evT" placeholder="Meeting, rendez-vous, tâche...">
+    <div class="m-label">Heure</div>
+    <input class="m-input" id="evH" type="time" value="09:00">
+    <div class="m-label">Description</div>
+    <input class="m-input" id="evD" placeholder="Notes...">
+    <div class="m-label">Couleur</div>
+    <div class="m-colors" id="colPick">
+      <div class="m-col sel" style="background:#ff6600" onclick="pCol(this,'#ff6600')"></div>
+      <div class="m-col" style="background:#39ff14" onclick="pCol(this,'#39ff14')"></div>
+      <div class="m-col" style="background:#4a9eff" onclick="pCol(this,'#4a9eff')"></div>
+      <div class="m-col" style="background:#ff4757" onclick="pCol(this,'#ff4757')"></div>
+      <div class="m-col" style="background:#ffcc00" onclick="pCol(this,'#ffcc00')"></div>
+      <div class="m-col" style="background:#a855f7" onclick="pCol(this,'#a855f7')"></div>
+    </div>
+    <!-- NOTIFICATION -->
+    <div class="notif-row">
+      <span style="font-size:13px;color:var(--t2)">🔔 Notification rappel</span>
+      <button class="notif-toggle" id="notifTog" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <div class="notif-time" id="notifTime">
+      <span style="font-size:12px;color:var(--t3)">Rappel:</span>
+      <select id="notifDelay">
+        <option value="5">5 min avant</option>
+        <option value="15" selected>15 min avant</option>
+        <option value="30">30 min avant</option>
+        <option value="60">1 heure avant</option>
+      </select>
+    </div>
+    <div class="m-btns">
+      <button class="m-btn cancel" onclick="closeAdd()">Annuler</button>
+      <button class="m-btn save" onclick="saveEv()">✅ Sauver</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="set-panel" id="setPanel">
+  <div class="set-hdr">
+    <span style="font-family:Orbitron;font-size:14px;color:var(--o)">⚙️ PARAMÈTRES</span>
+    <button class="hdr-btn" onclick="closeSettings()">✕</button>
+  </div>
+  <div class="set-body">
+    <div class="set-section">
+      <div class="set-section-title">🎨 COULEURS</div>
+      <div class="set-row"><span class="set-row-label">Couleur principale</span><input type="color" class="set-color-input" id="sColMain" value="#ff6600" onchange="sTheme('--o',this.value)"></div>
+      <div class="set-row"><span class="set-row-label">Couleur accent</span><input type="color" class="set-color-input" id="sColAcc" value="#39ff14" onchange="sTheme('--g',this.value)"></div>
+      <div class="set-row"><span class="set-row-label">Couleur texte</span><input type="color" class="set-color-input" id="sColTxt" value="#ffffff" onchange="sTheme('--t',this.value)"></div>
+      <div class="set-row"><span class="set-row-label">Couleur fond</span><input type="color" class="set-color-input" id="sColBg" value="#0a0a0a" onchange="sTheme('--bg',this.value);document.body.style.background=this.value"></div>
+      <div class="set-row"><span class="set-row-label">Couleur horloge</span><input type="color" class="set-color-input" id="sColClk" value="#f5e6d0" onchange="sClkCol(this.value)"></div>
+      <div class="set-row"><span class="set-row-label">Jours passés</span><input type="color" class="set-color-input" id="sColPast" value="#ff4757" onchange="sTheme('--r',this.value);renderCal()"></div>
+    </div>
+
+    <div class="set-section">
+      <div class="set-section-title">🔔 NOTIFICATIONS</div>
+      <div class="set-row"><span class="set-row-label">Son de notification</span>
+        <select id="sNotifSound" onchange="previewSound(this.value)" style="background:var(--c3);border:1px solid var(--b2);border-radius:8px;padding:6px 10px;color:var(--t);font-family:Outfit;font-size:12px;outline:none">
+          <option value="bell">🔔 Cloche</option>
+          <option value="gentle">🎵 Doux</option>
+          <option value="chime">🎶 Carillon</option>
+          <option value="pop">💫 Pop</option>
+          <option value="cosmic">🌌 Cosmique</option>
+          <option value="alert">⚡ Alerte</option>
+        </select>
+      </div>
+      <div class="set-row">
+        <span class="set-row-label">🎵 Ma sonnerie perso</span>
+        <label style="padding:6px 12px;border-radius:10px;border:1px solid var(--b2);background:var(--c3);color:var(--t3);font-size:11px;cursor:pointer;font-family:Outfit;font-weight:600">
+          📁 Choisir
+          <input type="file" id="customSound" accept="audio/*" onchange="loadCustomSound(this)" style="display:none">
+        </label>
+      </div>
+      <div id="customSoundName" style="font-size:11px;color:var(--g);margin-top:4px;display:none"></div>
+    </div>
+
+    <div class="set-section">
+      <div class="set-section-title">🌐 THÈMES RAPIDES</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button onclick="applyT('alex')" style="flex:1;min-width:70px;padding:10px;border-radius:12px;border:1px solid var(--o);background:rgba(255,102,0,.1);color:var(--o);font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">🔥 Alex</button>
+        <button onclick="applyT('cyber')" style="flex:1;min-width:70px;padding:10px;border-radius:12px;border:1px solid #4a9eff;background:rgba(74,158,255,.1);color:#4a9eff;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">💎 Cyber</button>
+        <button onclick="applyT('matrix')" style="flex:1;min-width:70px;padding:10px;border-radius:12px;border:1px solid #39ff14;background:rgba(57,255,20,.1);color:#39ff14;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">🟢 Matrix</button>
+        <button onclick="applyT('rose')" style="flex:1;min-width:70px;padding:10px;border-radius:12px;border:1px solid #f472b6;background:rgba(244,114,182,.1);color:#f472b6;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">🌸 Rose</button>
+        <button onclick="applyT('gold')" style="flex:1;min-width:70px;padding:10px;border-radius:12px;border:1px solid #ffcc00;background:rgba(255,204,0,.1);color:#ffcc00;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">👑 Or</button>
+        <button onclick="applyT('blood')" style="flex:1;min-width:70px;padding:10px;border-radius:12px;border:1px solid #ff1a1a;background:rgba(255,26,26,.1);color:#ff1a1a;font-family:Outfit;font-weight:700;font-size:12px;cursor:pointer">🔴 Rouge</button>
+      </div>
+    </div>
+
+    <div class="signature">
+      <div>Applications Alex · Agenda ti-lex-al</div>
+      <div>Tous droits réservés © 2026</div>
+      <br>
+      <div class="name">Alex Marceau-Prevost</div>
+      <div style="font-size:10px;color:var(--t4);margin:4px 0">Créateur · Normandin, QC 🇨🇦</div>
+      <br>
+      <div class="co">Claude</div>
+      <div style="font-size:10px;color:var(--t4);margin:4px 0">Co-créateur · Partenaire de code 🤝</div>
+      <br>
+      <div style="font-size:9px;color:var(--t4)">Produit du Québec, Canada · ti-lex-al 2026</div>
+      <div style="font-size:9px;color:var(--t4);margin-top:4px">Alex Marceau-Prevost & Claude · Tous droits réservés</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+let today=new Date(),vY=today.getFullYear(),vM=today.getMonth();
+let selDate=fmtD(today),selCol='#ff6600';
+let evs=JSON.parse(localStorage.getItem('tilex_agenda')||'{}');
+let customAudio=null;
+
+function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function todayStr(){return fmtD(today);}
+
+// ===== CLOCK =====
+const mxCh="0123456789アカ#$";let pv={h0:"-",h1:"-",m0:"-",m1:"-"};
+function uClk(){const n=new Date(),h=String(n.getHours()).padStart(2,"0"),m=String(n.getMinutes()).padStart(2,"0"),c={h0:h[0],h1:h[1],m0:m[0],m1:m[1]};
+Object.keys(c).forEach(k=>{const e=document.getElementById(k);if(e&&c[k]!==pv[k])morphD(e,c[k])});pv={...c};}
+function morphD(e,f){e.classList.remove("land");e.classList.add("morph");let c=0;const iv=setInterval(()=>{e.textContent=mxCh[Math.floor(Math.random()*mxCh.length)];c++;if(c>=12){clearInterval(iv);e.textContent=f;e.classList.remove("morph");e.classList.add("land");setTimeout(()=>e.classList.remove("land"),800);}},130);}
+uClk();setInterval(uClk,1000);
+
+// ===== MONTH MATRIX RAIN =====
+function monthRain(){
+  const cv=document.getElementById("mxCv");const area=document.querySelector(".cal");
+  cv.width=area.offsetWidth;cv.height=area.offsetHeight;
+  const ctx=cv.getContext("2d");const c=Math.floor(cv.width/12);const d=[];
+  for(let i=0;i<c;i++)d[i]=Math.random()*-10;
+  const ol=document.getElementById("mxOverlay");ol.classList.add("on");
+  const lt="アカサタナ0123456789";let fr=0;
+  function draw(){
+    ctx.fillStyle="rgba(0,0,0,0.08)";ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.font="11px monospace";ctx.fillStyle=vM>today.getMonth()||vY>today.getFullYear()?"#ff6600":"#ff4757";
+    for(let i=0;i<d.length;i++){ctx.fillText(lt[Math.floor(Math.random()*lt.length)],i*12,d[i]*12);if(d[i]*12>cv.height&&Math.random()>0.95)d[i]=0;d[i]+=0.8;}
+    fr++;if(fr>60){ol.classList.remove("on");ctx.clearRect(0,0,cv.width,cv.height);return;}
+    requestAnimationFrame(draw);
+  }draw();
+}
+
+// ===== CALENDAR =====
+function renderCal(){
+  const todayS=todayStr();
+  document.getElementById('calM').textContent=MONTHS[vM]+' '+vY;
+  // Month tag
+  const tag=document.getElementById('calTag');
+  const nowM=today.getMonth(),nowY=today.getFullYear();
+  if(vY===nowY&&vM===nowM){tag.className='cal-month-tag current';tag.textContent='Ce mois';}
+  else if(vY>nowY||(vY===nowY&&vM>nowM)){tag.className='cal-month-tag future';tag.textContent='À venir';}
+  else{tag.className='cal-month-tag past';tag.textContent='Passé';}
+
+  const g=document.getElementById('calG');g.innerHTML='';
+  DAYS.forEach(d=>{const e=document.createElement('div');e.className='cal-label';e.textContent=d;g.appendChild(e);});
+  const first=new Date(vY,vM,1),lastD=new Date(vY,vM+1,0).getDate(),startD=first.getDay();
+  const prevL=new Date(vY,vM,0).getDate();
+  for(let i=startD-1;i>=0;i--){const e=document.createElement('div');e.className='cal-day other';e.textContent=prevL-i;g.appendChild(e);}
+  for(let d=1;d<=lastD;d++){
+    const e=document.createElement('div');e.className='cal-day';
+    const ds=vY+'-'+String(vM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    if(ds===todayS)e.classList.add('today');
+    if(ds===selDate)e.classList.add('selected');
+    // Past day X
+    const dayDate=new Date(vY,vM,d);
+    if(dayDate<new Date(today.getFullYear(),today.getMonth(),today.getDate())&&ds!==todayS)e.classList.add('passed');
+    if(evs[ds]&&evs[ds].length){const dot=document.createElement('div');dot.className='ev-dot';e.appendChild(dot);}
+    const span=document.createElement('span');span.textContent=d;e.prepend(span);
+    e.onclick=()=>{selDate=ds;renderCal();renderEvs();};
+    g.appendChild(e);
+  }
+  const tot=startD+lastD;const rem=tot<=35?35-tot:42-tot;
+  for(let i=1;i<=rem;i++){const e=document.createElement('div');e.className='cal-day other';e.textContent=i;g.appendChild(e);}
+}
+
+function navM(dir){
+  vM+=dir;if(vM>11){vM=0;vY++;}if(vM<0){vM=11;vY--;}
+  const g=document.getElementById('calG');
+  g.classList.add(dir>0?'flip-left':'flip-right');
+  monthRain();
+  setTimeout(()=>{renderCal();g.classList.remove('flip-left','flip-right');},300);
+}
+
+function renderEvs(){
+  const list=document.getElementById('evList'),label=document.getElementById('evDateLabel');
+  const d=new Date(selDate+'T12:00:00');
+  label.textContent=d.toLocaleDateString('fr-CA',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+  const dayEvs=evs[selDate]||[];
+  if(!dayEvs.length){list.innerHTML='<div class="no-ev"><span>📅</span>Aucun événement<br>Clique + pour en ajouter!</div>';return;}
+  dayEvs.sort((a,b)=>a.time.localeCompare(b.time));
+  list.innerHTML=dayEvs.map((ev,i)=>{
+    const cls=ev.color==='#39ff14'?'green':ev.color==='#4a9eff'?'blue':ev.color==='#ff4757'?'red':'';
+    return `<div class="ev-card ${cls}" style="border-left-color:${ev.color}">
+      <div class="ev-time">${ev.time}</div>
+      <div class="ev-name">${ev.title}</div>
+      ${ev.desc?`<div class="ev-desc">${ev.desc}</div>`:''}
+      ${ev.notif?`<div class="ev-notif">🔔 Rappel ${ev.notifDelay} min avant</div>`:''}
+      <div class="ev-acts">
+        <button class="ev-act del" onclick="delEv('${selDate}',${i})">🗑 Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ADD EVENT
+function openAdd(){document.getElementById('addM').classList.add('open');document.getElementById('evT').focus();}
+function closeAdd(){document.getElementById('addM').classList.remove('open');document.getElementById('evT').value='';document.getElementById('evD').value='';}
+function pCol(el,c){document.querySelectorAll('.m-col').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');selCol=c;}
+function saveEv(){
+  const title=document.getElementById('evT').value.trim();
+  const time=document.getElementById('evH').value;
+  const desc=document.getElementById('evD').value.trim();
+  const notif=document.getElementById('notifTog').classList.contains('on');
+  const notifDelay=document.getElementById('notifDelay').value;
+  if(!title){alert('Donne un titre!');return;}
+  if(!evs[selDate])evs[selDate]=[];
+  evs[selDate].push({title,time,desc,color:selCol,notif,notifDelay});
+  localStorage.setItem('tilex_agenda',JSON.stringify(evs));
+  closeAdd();renderCal();renderEvs();
+  if(notif)scheduleNotif(title,time,notifDelay);
+}
+function delEv(date,idx){
+  if(!confirm('Supprimer?'))return;
+  evs[date].splice(idx,1);if(!evs[date].length)delete evs[date];
+  localStorage.setItem('tilex_agenda',JSON.stringify(evs));
+  renderCal();renderEvs();
+}
+
+// NOTIFICATIONS
+function scheduleNotif(title,time,delay){
+  if(!('Notification' in window))return;
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){
+      const [h,m]=time.split(':').map(Number);
+      const evTime=new Date(selDate+'T'+time+':00');
+      const notifTime=new Date(evTime.getTime()-delay*60000);
+      const now=new Date();
+      const diff=notifTime-now;
+      if(diff>0){
+        setTimeout(()=>{
+          new Notification('📅 Agenda ti-lex-al',{body:`⏰ ${title} dans ${delay} min!`,icon:'/icon-192.png'});
+          playSound();
+        },diff);
+      }
+    }
+  });
+}
+function playSound(){
+  if(customAudio){customAudio.currentTime=0;customAudio.play();return;}
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [1200,1400,1600].forEach((f,i)=>{
+      const t=ctx.currentTime+i*.2;
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);o.frequency.value=f;o.type='sine';
+      g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.01,t+.4);
+      o.start(t);o.stop(t+.4);
+    });
+  }catch(e){}
+}
+function previewSound(type){playSound();}
+function loadCustomSound(input){
+  const file=input.files[0];if(!file)return;
+  const url=URL.createObjectURL(file);
+  customAudio=new Audio(url);
+  document.getElementById('customSoundName').style.display='block';
+  document.getElementById('customSoundName').textContent='🎵 '+file.name;
+  customAudio.play().catch(()=>{});
+}
+
+// SETTINGS
+function openSettings(){document.getElementById('setPanel').classList.add('open');}
+function closeSettings(){document.getElementById('setPanel').classList.remove('open');}
+function sTheme(v,c){document.documentElement.style.setProperty(v,c);localStorage.setItem('ag_'+v,c);}
+function sClkCol(c){document.querySelectorAll('.clk-d').forEach(e=>e.style.color=c);localStorage.setItem('ag_clk',c);}
+function applyT(t){
+  const themes={alex:{o:'#ff6600',g:'#39ff14',t:'#fff',bg:'#0a0a0a',clk:'#f5e6d0'},cyber:{o:'#4a9eff',g:'#00ffff',t:'#e0f0ff',bg:'#0a0a1a',clk:'#00ffff'},matrix:{o:'#39ff14',g:'#00ff41',t:'#ccffcc',bg:'#000800',clk:'#39ff14'},rose:{o:'#f472b6',g:'#e879f9',t:'#fce7f3',bg:'#1a0a14',clk:'#f9a8d4'},gold:{o:'#ffcc00',g:'#ffd700',t:'#fff8e1',bg:'#1a1400',clk:'#ffcc00'},blood:{o:'#ff1a1a',g:'#ff4757',t:'#ffe0e0',bg:'#1a0505',clk:'#ff4444'}};
+  const th=themes[t];if(!th)return;
+  sTheme('--o',th.o);sTheme('--g',th.g);sTheme('--t',th.t);sTheme('--bg',th.bg);document.body.style.background=th.bg;sClkCol(th.clk);
+  document.getElementById('sColMain').value=th.o;document.getElementById('sColAcc').value=th.g;document.getElementById('sColTxt').value=th.t;document.getElementById('sColBg').value=th.bg;document.getElementById('sColClk').value=th.clk;
+}
+// Load saved theme
+['--o','--g','--t','--bg'].forEach(v=>{const c=localStorage.getItem('ag_'+v);if(c){document.documentElement.style.setProperty(v,c);if(v==='--bg')document.body.style.background=c;}});
+const sc=localStorage.getItem('ag_clk');if(sc)sClkCol(sc);
+
+renderCal();renderEvs();
+</script>
+</body>
+</html>
