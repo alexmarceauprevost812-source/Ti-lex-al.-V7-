@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ti-lex Store — Apps Gratuites</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--o:#ff6600;--g:#39ff14;--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--b1:#1f1f1f;--b2:#2a2a2a;--t:#fff;--t2:#ccc;--t3:#888}
+body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--t);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+.header{text-align:center;padding:40px 20px 10px;position:relative}
+.header::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--o),transparent)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px}
+.logo-icon{width:56px;height:56px}
+.logo-title{font-family:'Orbitron';font-weight:900;font-size:clamp(28px,6vw,42px);color:var(--t);letter-spacing:.05em}
+.logo-title span{color:var(--o)}
+.logo-sub{font-family:'Share Tech Mono';font-size:12px;letter-spacing:4px;color:var(--t3);text-transform:uppercase;margin-top:2px}
+.header-badge{display:inline-flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+.badge{padding:4px 12px;border-radius:20px;font-size:10px;font-family:'Orbitron';font-weight:700;letter-spacing:.5px}
+.badge-qc{background:rgba(74,158,255,.12);color:#4a9eff;border:1px solid rgba(74,158,255,.25)}
+.badge-free{background:rgba(57,255,20,.1);color:var(--g);border:1px solid rgba(57,255,20,.2)}
+.badge-safe{background:rgba(255,102,0,.1);color:var(--o);border:1px solid rgba(255,102,0,.2)}
+
+/* CODE TYPING BANNER */
+.code-banner{max-width:700px;margin:24px auto 0;background:rgba(10,10,10,.9);border:1px solid rgba(57,255,20,.15);border-radius:14px;padding:16px 18px;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.7;color:var(--g);position:relative;overflow:hidden}
+.code-banner::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--g),var(--o),transparent);animation:scan 4s linear infinite}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.cb-dots{display:flex;gap:5px;margin-bottom:10px}
+.cb-dot{width:8px;height:8px;border-radius:50%}.cb-r{background:#ff5f57}.cb-y{background:#febc2e}.cb-g{background:#28c840}
+.cb-cm{color:#555}.cb-kw{color:var(--o)}.cb-str{color:#ff9933}.cb-fn{color:#4a9eff}.cb-val{color:var(--g)}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:24px;padding:20px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-n{font-family:'Orbitron';font-weight:900;font-size:28px;color:var(--o)}
+.stat-l{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* APP GRID */
+.grid{max-width:800px;margin:0 auto;padding:10px 16px 80px;display:flex;flex-direction:column;gap:12px}
+.app{display:flex;align-items:center;gap:14px;background:var(--bg2);border:1px solid var(--b2);border-radius:18px;padding:14px 16px;transition:all .25s;cursor:default}
+.app:hover{border-color:rgba(255,102,0,.3);background:rgba(255,102,0,.03);transform:translateY(-1px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.app-icon{width:64px;height:64px;border-radius:16px;flex-shrink:0;overflow:hidden;border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.app-icon svg{width:100%;height:100%}
+.app-info{flex:1;min-width:0}
+.app-name{font-weight:800;font-size:16px;color:var(--t);margin-bottom:2px}
+.app-desc{font-size:12px;color:var(--t3);line-height:1.4}
+.app-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.app-tag{font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.05);color:var(--t3);font-weight:600}
+.app-right{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.use-btn{padding:8px 18px;border-radius:50px;border:none;background:var(--g);color:#000;font-family:'Outfit';font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.use-btn:hover{box-shadow:0 0 20px rgba(57,255,20,.4);transform:scale(1.04)}
+.dl-btn{padding:6px 14px;border-radius:50px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:'Outfit';font-weight:700;font-size:11px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.dl-btn:hover{border-color:var(--o);color:var(--o)}
+.dl-btn:active,.use-btn:active{transform:scale(.97)}
+.dl-price{font-size:10px;color:var(--g);font-weight:700}
+
+/* SECTION TITLE */
+.sec{padding:20px 20px 8px;max-width:800px;margin:0 auto}
+.sec-t{font-family:'Orbitron';font-size:13px;color:var(--o);letter-spacing:2px;font-weight:900}
+
+/* FOOTER */
+.footer{text-align:center;padding:30px 20px;font-family:'Share Tech Mono';font-size:10px;color:var(--t3);line-height:2;border-top:1px solid var(--b1);margin-top:20px;max-width:800px;margin-left:auto;margin-right:auto}
+.footer a{color:var(--o);text-decoration:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);z-index:100;background:var(--bg3);border:1px solid var(--o);border-radius:14px;padding:10px 24px;font-size:14px;font-weight:600;color:var(--t);box-shadow:0 8px 30px rgba(0,0,0,.6);transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-row">
+    <!-- TL LOGO inline -->
+    <svg class="logo-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d" stroke="#ff6600" stroke-width="2.5"/>
+      <circle cx="32" cy="28" r="20" fill="none" stroke="#ff6600" stroke-width="2.5"/>
+      <text x="32" y="34" text-anchor="middle" font-family="Arial Black,sans-serif" font-weight="900" font-size="20" fill="white">TL</text>
+      <rect x="28" y="16.5" width="8" height="1.8" rx="1" fill="#ff6600" opacity=".8"/>
+    </svg>
+    <div>
+      <div class="logo-title">ti<span>-</span>lex <span>Store</span></div>
+      <div class="logo-sub">Apps gratuites · Produit du Québec</div>
+    </div>
+  </div>
+  <div class="header-badge">
+    <span class="badge badge-qc">🏛️ LOI 25 QC</span>
+    <span class="badge badge-free">🆓 100% GRATUIT</span>
+    <span class="badge badge-safe">🔒 SÉCURITAIRE</span>
+  </div>
+</div>
+
+<!-- CODE BANNER -->
+<div class="code-banner">
+  <div class="cb-dots"><div class="cb-dot cb-r"></div><div class="cb-dot cb-y"></div><div class="cb-dot cb-g"></div></div>
+  <span class="cb-cm">// ti-lex Store — Catalogue d'applications</span><br>
+  <span class="cb-kw">const</span> <span class="cb-fn">créateur</span> = <span class="cb-str">"Alex Marceau-Prévoux"</span>;<br>
+  <span class="cb-kw">const</span> <span class="cb-fn">origine</span> = <span class="cb-str">"Lac-Saint-Jean · Pays des Bleuets 🫐"</span>;<br>
+  <span class="cb-kw">const</span> <span class="cb-fn">prix</span> = <span class="cb-val">0</span>; <span class="cb-cm">// GRATUIT pour tout le monde</span><br>
+  <span class="cb-kw">const</span> <span class="cb-fn">sécurité</span> = <span class="cb-val">true</span>; <span class="cb-cm">// Loi 25 QC + LPRPDE 🔒</span><br>
+  <span class="cb-fn">console</span>.<span class="cb-fn">log</span>(<span class="cb-str">"🔥 Bienvenue au ti-lex Store!"</span>);
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="appCount">0</div><div class="stat-l">Applications</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--g)">0$</div><div class="stat-l">Toujours gratuit</div></div>
+  <div class="stat"><div class="stat-n" style="color:#4a9eff">QC</div><div class="stat-l">Produit du Québec</div></div>
+</div>
+
+<!-- APPS LIST -->
+<div class="sec"><div class="sec-t">🔥 APPLICATIONS PRINCIPALES</div></div>
+<div class="grid" id="appGrid"></div>
+
+<!-- FOOTER -->
+<div class="footer">
+  ti-lex Store · Produit du Québec, Canada 🇨🇦<br>
+  Créé au Lac-Saint-Jean · Pays des Bleuets 🫐<br>
+  © 2026 Alex Marceau-Prévoux · Tous droits réservés<br>
+  Co-créé avec Claude (Anthropic) 🤝<br>
+  <br>
+  Conforme: <a href="https://www.cai.gouv.qc.ca/loi-25/">Loi 25 QC</a> · <a href="https://laws-lois.justice.gc.ca/fra/lois/p-8.6/">LPRPDE</a> · CASL
+</div>
+
+<script>
+const APPS = [
+  {
+    name: "ti-lex-al",
+    desc: "Plateforme IA complète — Chat, Codex, Studio, Déploiement. L'app principale de l'écosystème ti-lex.",
+    tags: ["IA","Chat","Codex","Studio"],
+    color: "#ff6600",
+    icon: "tilex",
+    file: "ti-lex-al-monde.html"
+  },
+  {
+    name: "ti-lex TIME",
+    desc: "Horloge numérique futuriste avec effet Matrix et animation de chiffres.",
+    tags: ["Horloge","Widget","Animation"],
+    color: "#39ff14",
+    icon: "clock",
+    file: "tilex-time.html"
+  },
+  {
+    name: "GPS IA Alex",
+    desc: "Navigation intelligente avec carte interactive et recherche de villes.",
+    tags: ["GPS","Carte","Navigation"],
+    color: "#4a9eff",
+    icon: "gps",
+    file: "gps-ia-alex.html"
+  },
+  {
+    name: "Agent AL",
+    desc: "Agent IA personnel — ton assistant intelligent québécois qui répond à tout.",
+    tags: ["IA","Agent","Assistant"],
+    color: "#a855f7",
+    icon: "agent",
+    file: "agent-al.html"
+  },
+  {
+    name: "Agenda ti-lex",
+    desc: "Calendrier et planificateur avec gestion d'événements et rappels.",
+    tags: ["Agenda","Calendrier","Productivité"],
+    color: "#14b8a6",
+    icon: "agenda",
+    file: "agenda.html"
+  },
+  {
+    name: "Mode Codex",
+    desc: "Écris en français, ti-lex traduit en code. Même les jeunes peuvent coder!",
+    tags: ["Code","Français","Éducation"],
+    color: "#39ff14",
+    icon: "codex",
+    file: "mode-codex.html"
+  },
+
+  {
+    name: "Agent Alex — Espion",
+    desc: "Terminal espion avec missions, outils secrets et interface classified.",
+    tags: ["Jeu","Espion","Terminal"],
+    color: "#ff4757",
+    icon: "spy",
+    file: "agent-alex.html"
+  },
+  {
+    name: "World Map",
+    desc: "Carte mondiale SVG interactive — explore le monde avec ti-lex.",
+    tags: ["Carte","Monde","Exploration"],
+    color: "#22d3ee",
+    icon: "world",
+    file: "world-map.html"
+  },
+  {
+    name: "AlexGPT Social",
+    desc: "Réseau social ti-lex — publications, likes, commentaires, profils.",
+    tags: ["Social","Réseau","Communauté"],
+    color: "#f472b6",
+    icon: "social",
+    file: "alexgpt-social.html"
+  }
+];
+
+// SVG ICON GENERATORS
+function makeIcon(type, color) {
+  const c = color;
+  const icons = {
+    tilex: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <circle cx="32" cy="28" r="18" fill="none" stroke="${c}" stroke-width="2.5"/>
+      <text x="32" y="34" text-anchor="middle" font-family="Arial Black,sans-serif" font-weight="900" font-size="18" fill="white">TL</text>
+      <rect x="28" y="17" width="8" height="1.5" rx=".75" fill="${c}" opacity=".8"/>
+      <text x="32" y="54" text-anchor="middle" font-family="monospace" font-size="6" fill="${c}" opacity=".5">STORE</text>
+    </svg>`,
+
+    clock: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <rect x="8" y="16" width="48" height="32" rx="6" fill="#050505" stroke="${c}" stroke-width="1.5"/>
+      <text x="32" y="38" text-anchor="middle" font-family="'Courier New',monospace" font-weight="900" font-size="18" fill="${c}" letter-spacing="1">13:32</text>
+      <circle cx="32" cy="10" r="1.5" fill="${c}" opacity=".4"/>
+      <rect x="22" y="50" width="20" height="3" rx="1.5" fill="#333"/>
+      <text x="32" y="58" text-anchor="middle" font-family="monospace" font-size="4.5" fill="${c}" opacity=".4">ti-lex TIME</text>
+    </svg>`,
+
+    gps: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0a0a1a"/>
+      <circle cx="32" cy="28" r="16" fill="none" stroke="${c}" stroke-width="1.5" opacity=".3"/>
+      <circle cx="32" cy="28" r="8" fill="none" stroke="${c}" stroke-width="1.5" opacity=".5"/>
+      <circle cx="32" cy="28" r="3" fill="${c}"/>
+      <line x1="32" y1="8" x2="32" y2="18" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <line x1="32" y1="38" x2="32" y2="48" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <line x1="12" y1="28" x2="22" y2="28" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <line x1="42" y1="28" x2="52" y2="28" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <text x="32" y="58" text-anchor="middle" font-family="monospace" font-size="5" fill="${c}" opacity=".5">GPS IA</text>
+    </svg>`,
+
+    agent: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <circle cx="32" cy="24" r="12" fill="#1a1a1a" stroke="${c}" stroke-width="1.5"/>
+      <rect x="24" y="21" width="5" height="3" rx="1.5" fill="${c}"/>
+      <rect x="35" y="21" width="5" height="3" rx="1.5" fill="${c}"/>
+      <path d="M26,30 Q32,36 38,30" fill="none" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="30" y="12" width="4" height="4" rx="2" fill="${c}" opacity=".6"/>
+      <line x1="32" y1="8" x2="32" y2="12" stroke="${c}" stroke-width="1.5" opacity=".6"/>
+      <rect x="18" y="40" width="28" height="14" rx="4" fill="#1a1a1a" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <text x="32" y="50" text-anchor="middle" font-family="monospace" font-size="6" fill="${c}" opacity=".6">AL</text>
+    </svg>`,
+
+    agenda: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <rect x="12" y="14" width="40" height="40" rx="6" fill="#111" stroke="${c}" stroke-width="1.5"/>
+      <rect x="12" y="14" width="40" height="10" rx="6" fill="${c}" opacity=".2"/>
+      <line x1="24" y1="10" x2="24" y2="18" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
+      <line x1="40" y1="10" x2="40" y2="18" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
+      <text x="32" y="22" text-anchor="middle" font-family="monospace" font-size="5" fill="${c}" font-weight="700">AVR</text>
+      <text x="32" y="42" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="18" fill="white" font-weight="900">05</text>
+      <circle cx="42" cy="46" r="3" fill="${c}" opacity=".3"/>
+    </svg>`,
+
+    codex: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <text x="10" y="22" font-family="monospace" font-size="8" fill="${c}" opacity=".8">&lt;/&gt;</text>
+      <rect x="10" y="28" width="20" height="2" rx="1" fill="${c}" opacity=".4"/>
+      <rect x="10" y="33" width="32" height="2" rx="1" fill="#ff6600" opacity=".4"/>
+      <rect x="10" y="38" width="14" height="2" rx="1" fill="${c}" opacity=".3"/>
+      <rect x="10" y="43" width="26" height="2" rx="1" fill="#4a9eff" opacity=".4"/>
+      <rect x="10" y="48" width="18" height="2" rx="1" fill="${c}" opacity=".3"/>
+      <text x="56" y="56" text-anchor="end" font-family="monospace" font-size="5" fill="${c}" opacity=".3">FR→JS</text>
+    </svg>`,
+
+    mecanic: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <circle cx="32" cy="28" r="14" fill="none" stroke="${c}" stroke-width="2"/>
+      <circle cx="32" cy="28" r="5" fill="${c}" opacity=".3"/>
+      <path d="M32,14 L35,18 L29,18Z" fill="${c}"/>
+      <path d="M32,42 L35,38 L29,38Z" fill="${c}"/>
+      <path d="M18,28 L22,25 L22,31Z" fill="${c}"/>
+      <path d="M46,28 L42,25 L42,31Z" fill="${c}"/>
+      <text x="32" y="54" text-anchor="middle" font-family="monospace" font-size="5" fill="${c}" opacity=".5">M8</text>
+    </svg>`,
+
+    spy: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <ellipse cx="32" cy="26" rx="20" ry="10" fill="none" stroke="${c}" stroke-width="1.5" opacity=".6"/>
+      <circle cx="24" cy="26" r="7" fill="#111" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="40" cy="26" r="7" fill="#111" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="24" cy="26" r="2.5" fill="${c}" opacity=".8"/>
+      <circle cx="40" cy="26" r="2.5" fill="${c}" opacity=".8"/>
+      <line x1="31" y1="26" x2="33" y2="26" stroke="${c}" stroke-width="1.5"/>
+      <path d="M22,38 L32,44 L42,38" fill="none" stroke="${c}" stroke-width="1.5" opacity=".4"/>
+      <text x="32" y="56" text-anchor="middle" font-family="monospace" font-size="4.5" fill="${c}" opacity=".4">CLASSIFIED</text>
+    </svg>`,
+
+    world: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0a0a1a"/>
+      <circle cx="32" cy="30" r="18" fill="none" stroke="${c}" stroke-width="1.5"/>
+      <ellipse cx="32" cy="30" rx="8" ry="18" fill="none" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <line x1="14" y1="24" x2="50" y2="24" stroke="${c}" stroke-width=".8" opacity=".3"/>
+      <line x1="14" y1="36" x2="50" y2="36" stroke="${c}" stroke-width=".8" opacity=".3"/>
+      <circle cx="40" cy="20" r="2" fill="${c}" opacity=".6"/>
+      <circle cx="24" cy="34" r="1.5" fill="${c}" opacity=".4"/>
+      <text x="32" y="56" text-anchor="middle" font-family="monospace" font-size="5" fill="${c}" opacity=".4">WORLD</text>
+    </svg>`,
+
+    social: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#0d0d0d"/>
+      <circle cx="22" cy="20" r="6" fill="#1a1a1a" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="42" cy="20" r="6" fill="#1a1a1a" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="6" fill="#1a1a1a" stroke="${c}" stroke-width="1.5"/>
+      <line x1="26" y1="23" x2="28" y2="29" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <line x1="38" y1="23" x2="36" y2="29" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <line x1="26" y1="17" x2="38" y2="17" stroke="${c}" stroke-width="1" opacity=".3"/>
+      <rect x="14" y="44" width="36" height="10" rx="5" fill="#111" stroke="${c}" stroke-width="1" opacity=".4"/>
+      <text x="32" y="52" text-anchor="middle" font-family="sans-serif" font-size="5" fill="${c}" opacity=".5">💬 Social</text>
+    </svg>`
+  };
+  return icons[type] || icons.tilex;
+}
+
+// RENDER APPS
+const grid = document.getElementById('appGrid');
+APPS.forEach((app, i) => {
+  const div = document.createElement('div');
+  div.className = 'app';
+  div.style.animationDelay = (i * .08) + 's';
+  div.innerHTML = `
+    <div class="app-icon">${makeIcon(app.icon, app.color)}</div>
+    <div class="app-info">
+      <div class="app-name">${app.name}</div>
+      <div class="app-desc">${app.desc}</div>
+      <div class="app-tags">${app.tags.map(t=>'<span class="app-tag">'+t+'</span>').join('')}</div>
+    </div>
+    <div class="app-right">
+      <button class="use-btn" onclick="useApp('${app.name}','${app.file}')">▶ Utiliser</button>
+      <button class="dl-btn" onclick="dlApp('${app.name}','${app.file}')">📥 Télécharger</button>
+      <span class="dl-price">GRATUIT</span>
+    </div>
+  `;
+  grid.appendChild(div);
+});
+
+document.getElementById('appCount').textContent = APPS.length;
+
+function useApp(name, file) {
+  toast('▶ Ouverture de ' + name + '...');
+  setTimeout(() => { window.open('/' + file, '_blank'); }, 800);
+}
+
+function dlApp(name, file) {
+  toast('📥 ' + name + ' — Téléchargement...');
+  const a = document.createElement('a');
+  a.href = '/' + file;
+  a.download = file;
+  a.click();
+}
+
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);requestAnimationFrame(()=>requestAnimationFrame(()=>e.classList.add("show")));setTimeout(()=>{e.classList.remove("show");setTimeout(()=>e.remove(),500);},2800);}
+</script>
+</body>
+</html>
