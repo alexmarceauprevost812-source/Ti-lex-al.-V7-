@@ -1,1 +1,0 @@
-npm i -D vite-plugin-pwa
