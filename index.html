@@ -767,6 +767,7 @@
         if (f.lsKey && val.length === 0) localStorage.removeItem(f.lsKey);
       }
     });
+    if (typeof refreshApiKeyBanner === 'function') refreshApiKeyBanner();
   }
 
   function loadDeployEnv() {
@@ -775,6 +776,35 @@
       var el = document.getElementById('envAnthropic');
       if (el) { el.value = saved; checkDeployEnv(); }
     }
+    refreshApiKeyBanner();
+  }
+
+  function refreshApiKeyBanner() {
+    var banner = document.getElementById('apiKeyBanner');
+    if (!banner) return;
+    var hasKey = !!localStorage.getItem('anthropic_api_key');
+    banner.style.display = hasKey ? 'none' : 'flex';
+  }
+
+  function promptApiKey() {
+    var current = localStorage.getItem('anthropic_api_key') || '';
+    var key = window.prompt('Colle ta clé API Anthropic (commence par sk-ant-) :', current);
+    if (key === null) return;
+    key = key.trim();
+    if (!key) {
+      localStorage.removeItem('anthropic_api_key');
+      showToast('🔑 Clé supprimée');
+    } else if (!key.startsWith('sk-ant-')) {
+      showToast('⚠️ La clé doit commencer par sk-ant-');
+      return;
+    } else {
+      localStorage.setItem('anthropic_api_key', key);
+      showToast('✅ Clé enregistrée !');
+    }
+    var envEl = document.getElementById('envAnthropic');
+    if (envEl) envEl.value = key;
+    if (typeof checkDeployEnv === 'function') checkDeployEnv();
+    refreshApiKeyBanner();
   }
 
   function deployLog(msg, type) {
@@ -1381,6 +1411,14 @@
   </div>
 
   <div class="chat-main" id="chatMain">
+    <div id="apiKeyBanner" style="display:none;margin:10px auto 0;max-width:720px;padding:12px 16px;background:linear-gradient(135deg,rgba(255,102,0,0.15),rgba(255,68,0,0.08));border:1px solid rgba(255,102,0,0.4);border-radius:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;" onclick="promptApiKey()">
+      <span style="font-size:22px;">&#128273;</span>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;color:var(--orange);">Configurer ta cl&#233; Anthropic</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px;">Clique ici pour coller ta cl&#233; sk-ant-... et activer l'IA</div>
+      </div>
+      <span style="font-size:18px;color:var(--orange);">&rarr;</span>
+    </div>
     <div id="welcomeView">
       <img class="welcome-avatar" id="welcomeAvatar" src="" alt="TI-LEX-AL">
       <div class="welcome-text">Salut boss, on fait quoi ?&nbsp;🔥</div>
