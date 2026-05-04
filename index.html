@@ -2376,10 +2376,14 @@ console.log(greet('boss'));
     }
     showToast('🔍 Agent AL fouille le web...');
     try {
+      var searchHeaders = { 'Content-Type': 'application/json' };
+      var userApiKey = localStorage.getItem('anthropic_api_key');
+      if (userApiKey) searchHeaders['x-anthropic-key'] = userApiKey;
+
       // 🛡️ Search proxied through backend — no API keys in frontend!
       var response = await fetch(API_URL + '/api/search', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: searchHeaders,
         body: JSON.stringify({ query: query, max_results: 5 })
       });
       if (!response.ok) throw new Error('Search API error');
