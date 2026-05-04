@@ -750,19 +750,31 @@
   // ============ MODE DEPLOIEMENT ============
   function checkDeployEnv() {
     var fields = [
+      {id:'envAnthropic', statusId:'envAnthropicStatus', lsKey:'anthropic_api_key'},
       {id:'envOpenAI', statusId:'envOpenAIStatus'},
       {id:'envSupabase', statusId:'envSupabaseStatus'},
       {id:'envSupabaseKey', statusId:'envSupabaseKeyStatus'}
     ];
     fields.forEach(function(f) {
-      var val = document.getElementById(f.id).value.trim();
+      var el = document.getElementById(f.id);
+      var val = el ? el.value.trim() : '';
       var dot = document.getElementById(f.statusId);
       if (val.length > 5) {
         dot.className = 'deploy-env-status set';
+        if (f.lsKey) localStorage.setItem(f.lsKey, val);
       } else {
         dot.className = 'deploy-env-status unset';
+        if (f.lsKey && val.length === 0) localStorage.removeItem(f.lsKey);
       }
     });
+  }
+
+  function loadDeployEnv() {
+    var saved = localStorage.getItem('anthropic_api_key');
+    if (saved) {
+      var el = document.getElementById('envAnthropic');
+      if (el) { el.value = saved; checkDeployEnv(); }
+    }
   }
 
   function deployLog(msg, type) {
@@ -814,6 +826,7 @@
 
   // ============ NAVIGATION PATCH (deploy) ============
   window.addEventListener('load', function() {
+    loadDeployEnv();
     var origNav = window.navigateTo;
     window.navigateTo = function(view) {
       if (view === 'deploy') {
@@ -822,6 +835,7 @@
         if (el) el.style.display = 'block';
         var cm = document.getElementById('chatMain');
         if (cm) { cm.style.justifyContent = 'flex-start'; cm.style.paddingTop = '10px'; }
+        loadDeployEnv();
         return;
       }
       origNav(view);
@@ -1537,6 +1551,11 @@ console.log(greet('boss'));
       <div class="deploy-env-section">
         <div class="deploy-env-title">&#128274; Variables d'environnement</div>
         <div class="deploy-env-row">
+          <span class="deploy-env-key">ANTHROPIC_API_KEY</span>
+          <input class="deploy-env-val" type="password" id="envAnthropic" placeholder="sk-ant-..." oninput="checkDeployEnv()">
+          <div class="deploy-env-status unset" id="envAnthropicStatus"></div>
+        </div>
+        <div class="deploy-env-row">
           <span class="deploy-env-key">OPENAI_API_KEY</span>
           <input class="deploy-env-val" type="password" id="envOpenAI" placeholder="sk-..." oninput="checkDeployEnv()">
           <div class="deploy-env-status unset" id="envOpenAIStatus"></div>
@@ -2218,9 +2237,13 @@ console.log(greet('boss'));
         };
       }
 
+      var chatHeaders = { 'Content-Type': 'application/json' };
+      var userApiKey = localStorage.getItem('anthropic_api_key');
+      if (userApiKey) chatHeaders['x-anthropic-key'] = userApiKey;
+
       var response = await fetch(API_URL + '/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: chatHeaders,
         body: JSON.stringify({
           message: msg,
           agent: agentData,
