@@ -2311,8 +2311,16 @@ console.log(greet('boss'));
       console.error('❌ API Error:', err);
       thinkDiv.remove();
 
+      var msg2 = (err && err.message) || '';
+      if (msg2.indexOf('ANTHROPIC_API_KEY') !== -1 || msg2.toLowerCase().indexOf('clé') !== -1) {
+        showToast('🔑 Configure ta clé Anthropic pour activer le chat');
+        setTimeout(function(){ promptApiKey(); }, 400);
+        thinkDiv.remove && thinkDiv.remove();
+        return;
+      }
+
       var fallback = getSmartReply(msg);
-      var errorNote = '\n\n⚠️ _Mode hors-ligne (backend: ' + err.message + ')_';
+      var errorNote = '\n\n⚠️ _Mode hors-ligne (backend: ' + msg2 + ')_';
       displayBotMessage(fallback + errorNote, agentAvatar, mv);
       showToast('⚠️ Backend indisponible — mode local activé');
     }
